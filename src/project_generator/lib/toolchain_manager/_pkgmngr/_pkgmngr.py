@@ -19,15 +19,8 @@ def check_call(*args, buffered_out: bool = True, **kw_args) -> int:
     lgr.debug("Command: %s", *args)
     ret = 0
     try:
-        stdout_file = None
-        stderr_file = None
-
-        if lgr.isEnabledFor(logging.DEBUG):
-            stdout_file = subprocess.PIPE
-            stderr_file = subprocess.STDOUT
-        else:
-            stdout_file = subprocess.DEVNULL
-            stderr_file = subprocess.STDOUT
+        stdout_file = subprocess.PIPE
+        stderr_file = subprocess.STDOUT
 
         process = subprocess.Popen(
             *args, stdout=stdout_file, stderr=stderr_file, **kw_args)
