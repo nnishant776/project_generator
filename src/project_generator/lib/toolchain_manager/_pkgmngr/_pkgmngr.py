@@ -2,13 +2,12 @@
 PackageManager implementations
 '''
 
-import logging
 import subprocess
 from io import BufferedReader
 
-from project_generator.lib.toolchain_manager._pkgmngr._pkgmngrif import (
-    Action, PackageManager)
 from project_generator.lib.utils import logger
+
+from ._pkgmngrif import Action, PackageManager
 
 lgr = logger.get_logger('pkgmngr')
 
@@ -45,7 +44,7 @@ def check_call(*args, buffered_out: bool = True, **kw_args) -> int:
                 process.stdout.flush()
 
         ret = process.wait()
-        lgr.debug("(%s) - Process return %d", process.args[0], ret)
+        lgr.debug("(%s) - Process returned %d", process.args[0], ret)
 
     except FileNotFoundError as exec_err:
         lgr.fatal("Failed to find executable '%s'", exec_err.filename)

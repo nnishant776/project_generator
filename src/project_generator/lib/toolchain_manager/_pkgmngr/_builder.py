@@ -1,7 +1,11 @@
+'''
+Implementation for PackageManagerBuilder
+'''
 from typing_extensions import Self
+
 from .._distromngr import Distribution, PackageHandler
-from .._pkgmngr._pkgmngrif import PackageManager
-from .._pkgmngr._pkgmngr import AptPackageManager, PacmanPackageManager
+from ._pkgmngr import AptPackageManager, PacmanPackageManager
+from ._pkgmngrif import PackageManager
 
 
 class PackageManagerBuilder:

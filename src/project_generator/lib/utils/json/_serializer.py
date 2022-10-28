@@ -1,6 +1,9 @@
+'''
+Implementation for JSON serializer
+'''
+from enum import Enum
 from json import JSONEncoder
 from re import sub
-from enum import Enum
 
 
 def _camel_case(input_str: str) -> str:

@@ -1,3 +1,6 @@
+'''
+Implementation for logger
+'''
 import logging
 import os
 
