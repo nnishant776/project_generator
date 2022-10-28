@@ -12,7 +12,7 @@ def get_logger(module_name: str) -> logging.Logger:
     logger = logging.getLogger(module_name)
     log_handler = logging.StreamHandler()
     log_formatter = logging.Formatter(
-        "%(asctime)s;%(levelname)-8s;%(name)s;%(message)s")
+        "%(asctime)s; %(levelname)s; %(name)s; %(message)s")
     log_handler.setFormatter(log_formatter)
     logger.addHandler(log_handler)
 
