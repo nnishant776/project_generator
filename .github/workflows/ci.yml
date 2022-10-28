@@ -28,12 +28,12 @@ jobs:
         apt -y install --reinstall python3.10 python3-pip python3.10-venv
         python3 -m pip install --upgrade pip
         python3 -m venv .venv
-        source .venv/bin/activate
+        . .venv/bin/activate
         pip3 install pytest typing_extensions
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        source .venv/bin/activate
+        . .venv/bin/activate
         env PYTHONPATH=$PYTHONPATH:src/ pytest
 
   test-archlinux:
@@ -56,10 +56,10 @@ jobs:
         pacman --noconfirm -Syu
         python -m pip install --upgrade pip
         python -m venv .venv
-        source .venv/bin/activate
+        . .venv/bin/activate
         pip3 install pytest typing_extensions
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        source .venv/bin/activate
+        . .venv/bin/activate
         env PYTHONPATH=$PYTHONPATH:src/ pytest
