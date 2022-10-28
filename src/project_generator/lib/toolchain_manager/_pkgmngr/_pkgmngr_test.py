@@ -27,7 +27,7 @@ class TestPackageManagerBuilder(unittest.TestCase):
             .build()
         self.assertEqual(
             mngr.cmd_name,
-            PacmanPackageManager().cmd_name
+            'pacman'
         )
 
 
@@ -44,7 +44,7 @@ class TestAptPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        mngr.install(['gcc']).run()
+        self.assertEqual(mngr.install(['gcc']).run(), 0)
 
     def test_update(self):
         '''
@@ -54,7 +54,7 @@ class TestAptPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        mngr.update(['gcc']).run()
+        self.assertEqual(mngr.update(['gcc']).run(), 0)
 
     def test_remove(self):
         '''
@@ -64,7 +64,7 @@ class TestAptPackageManager(unittest.TestCase):
             .confirm_action(True) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        mngr.remove(['clang']).run()
+        self.assertEqual(mngr.remove(['clang']).run(), 0)
 
 
 class TestPacmanPackageManager(unittest.TestCase):
@@ -80,7 +80,7 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        mngr.install(['gcc', 'clang']).run()
+        self.assertEqual(mngr.install(['gcc', 'clang']).run(), 0)
 
     def test_update(self):
         '''
@@ -90,14 +90,14 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        mngr.update(['gcc']).run()
+        self.assertEqual(mngr.update(['gcc']).run(), 0)
 
     def test_remove(self):
         '''
         Test the remove function
         '''
         mngr = PackageManagerBuilder() \
-            .confirm_action(True) \
+            .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
         self.assertEqual(mngr.remove(['clang']).run(), 0)
@@ -133,4 +133,17 @@ def _check_os() -> PackageHandler | None:
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pkg_handler = _check_os()
+    if pkg_handler == PackageHandler.APT:
+        lgr.debug("PackageHandler = %s", PackageHandler.APT)
+        TestAptPackageManager().test_install()
+        TestAptPackageManager().test_remove()
+        TestAptPackageManager().test_update()
+    elif pkg_handler == PackageHandler.PACMAN:
+        lgr.debug("PackageHandler = %s", PackageHandler.PACMAN)
+        TestPacmanPackageManager().test_install()
+        TestPacmanPackageManager().test_remove()
+        TestPacmanPackageManager().test_update()
+    else:
+        lgr.warning("No supported distribution detected")
+        exit(1)
