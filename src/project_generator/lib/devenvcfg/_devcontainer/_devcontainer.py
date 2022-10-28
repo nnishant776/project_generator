@@ -5,7 +5,7 @@ Module which configures a devcontaner specification
 from dataclasses import dataclass
 from enum import Enum
 from typing_extensions import Self
-from lib.utils.json import Serializer, TransformType
+from project_generator.lib.utils.json import Serializer, TransformType
 
 
 class ContainerRuntime(Enum):
@@ -39,7 +39,7 @@ class MountSpec:
     target: str
     type: MountType
 
-    def __init__(self, source: str, target: str | None = None, mount_type: MountType | None = None):
+    def __init__(self, source: str, target: str = None, mount_type: MountType | None = None):
         self.source = source
         if target is None or target == '':
             self.target = self.source
