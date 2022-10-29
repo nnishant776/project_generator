@@ -148,7 +148,14 @@ class DevContainerBuilder:
         self._devcontainer.build = spec
         return self
 
-    def build_spec_from_args(self, dockerfile: str, context: str, args: dict = None, target: str = None, cache_from: str | list[str] = None) -> Self:
+    def build_spec_from_args(
+        self,
+        dockerfile: str,
+        context: str,
+        args: dict = None,
+        target: str = None,
+        cache_from: str | list[str] = None,
+    ) -> Self:
         '''
         Specify the buildspec for the dev container by providing arguments directly
         '''
@@ -161,6 +168,7 @@ class DevContainerBuilder:
         Specify the list of ports to be forwarded from the container
         '''
         self._devcontainer.forward_ports = ports
+        return self
 
     def override_command(self, override: bool) -> Self:
         '''
@@ -181,12 +189,14 @@ class DevContainerBuilder:
         Specify the list of security lables to be applied on the dev container
         '''
         self._devcontainer.security_opt = options
+        return self
 
     def capabilities(self, caps: list[str]) -> Self:
         '''
         Specify the list of capabilities for the container
         '''
         self._devcontainer.cap_add = caps
+        return self
 
     def mounts(self, mount_list: list[MountSpec]) -> Self:
         '''
@@ -219,6 +229,7 @@ class DevContainerBuilder:
         Specify the additional arguments required during the run
         '''
         self._devcontainer.run_args = args
+        return self
 
     def build(self) -> DevContainer:
         '''
