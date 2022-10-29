@@ -4,8 +4,9 @@ Module which configures a devcontaner specification
 
 from dataclasses import dataclass
 from enum import Enum
+
 from typing_extensions import Self
-from project_generator.lib.utils.json import Serializer, TransformType
+from project_generator.lib.utils.json import Serializer
 
 
 class ContainerRuntime(Enum):
