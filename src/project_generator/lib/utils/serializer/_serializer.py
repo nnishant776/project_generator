@@ -30,8 +30,7 @@ class Serializer:
     '''
 
     _enc_list = ['to_dict', 'serialize']
-    _builtin_types = (
-        dict, int, str, float, bool)
+    _builtin_types = (int, str, float, bool)
     _iterable_types = (list, tuple)
     _associative_types = (dict, )
 
@@ -56,16 +55,16 @@ class Serializer:
 
         for typ in Serializer._associative_types:
             if isinstance(obj, typ):
-                dict_repr = {}
+                assoc_repr = {}
                 for key in iter(obj):
                     val = obj[key]
                     if val is None:
                         continue
-                    dict_repr[key] = val
+                    assoc_repr[key] = self.default(val)
 
-                return dict_repr
+                return assoc_repr
 
-        json_repr = {}
+        dict_repr = {}
 
         serialize_delegate = None
         if not bypass:
@@ -82,17 +81,17 @@ class Serializer:
                 if value is None:
                     continue
                 if isinstance(value, Serializer._builtin_types):
-                    json_repr[k] = value
+                    dict_repr[k] = value
                 else:
-                    json_repr[k] = self.default(value)
+                    dict_repr[k] = self.default(value)
         elif hasattr(obj, '__slots__'):
             for k in getattr(obj, '__slots__'):
                 value = getattr(obj, k)
                 if value is None:
                     continue
                 if isinstance(value, Serializer._builtin_types):
-                    json_repr[k] = value
+                    dict_repr[k] = value
                 else:
-                    json_repr[k] = self.default(value)
+                    dict_repr[k] = self.default(value)
 
-        return json_repr
+        return dict_repr

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from typing_extensions import Self
-from project_generator.lib.utils.json import Serializer
+from project_generator.lib.utils.serializer import Serializer
 
 
 class ContainerRuntime(Enum):
