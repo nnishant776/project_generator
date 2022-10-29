@@ -3,7 +3,6 @@ Implementation for JSON serializer
 '''
 
 from enum import Enum
-from json import JSONEncoder
 from re import sub
 
 
@@ -25,73 +24,75 @@ class TransformType(Enum):
     PASCAL_CASE = 2
 
 
-class Serializer(JSONEncoder):
+class Serializer:
     '''
-    Custom JSON serializer
+    Custom recursive serializer
     '''
 
-    _enc_list = ['to_json', 'json', 'to_dict']
+    _enc_list = ['to_dict', 'serialize']
     _builtin_types = (
-        dict, int, list, str, float, tuple, bool)
+        dict, int, str, float, bool)
+    _iterable_types = (list, tuple)
+    _associative_types = (dict, )
 
-    def __init__(self, *args, transform_keys: TransformType = None, bypass=False,  ** kw):
-        JSONEncoder.__init__(self, *args, **kw)
-        self._transform_keys = transform_keys
-        self._bypass = bypass
+    def default(self, obj, bypass=False):
+        '''
+        Default implementation of the serializer
+        '''
 
-    def default(self, o):
-        '''
-        Overridden default converter method
-        '''
+        for typ in Serializer._builtin_types:
+            if isinstance(obj, typ):
+                return obj
+
+        for typ in Serializer._iterable_types:
+            if isinstance(obj, typ):
+                iter_repr = []
+                for val in iter(obj):
+                    if val is None:
+                        continue
+                    iter_repr.append(self.default(val))
+
+                return iter_repr
+
+        for typ in Serializer._associative_types:
+            if isinstance(obj, typ):
+                dict_repr = {}
+                for key in iter(obj):
+                    val = obj[key]
+                    if val is None:
+                        continue
+                    dict_repr[key] = val
+
+                return dict_repr
+
         json_repr = {}
 
-        try:
-            json_repr = JSONEncoder.default(self, o)
-            return json_repr
-        except TypeError:
-            pass
-
         serialize_delegate = None
-        if not self._bypass:
+        if not bypass:
             for attr in Serializer._enc_list:
-                if hasattr(o, attr):
-                    serialize_delegate = getattr(o, attr)
+                if hasattr(obj, attr):
+                    serialize_delegate = getattr(obj, attr)
                     break
 
         if serialize_delegate is not None:
             return serialize_delegate()
 
-        if hasattr(o, '__dict__'):
-            print(getattr(o, '__dict__'))
-            for k, value in getattr(o, '__dict__'):
-                serialized = False
-
-                if self._transform_keys == TransformType.CAMEL_CASE:
-                    k = _camel_case(k)
-
+        if hasattr(obj, '__dict__'):
+            for k, value in getattr(obj, '__dict__'):
+                if value is None:
+                    continue
                 if isinstance(value, Serializer._builtin_types):
                     json_repr[k] = value
-                    serialized = True
-
-                if not serialized and value is not None:
+                else:
                     json_repr[k] = self.default(value)
-        elif hasattr(o, '__slots__'):
-            for k in getattr(o, '__slots__'):
-                serialized = False
-
-                value = getattr(o, k)
-
-                if self._transform_keys == TransformType.CAMEL_CASE:
-                    k = _camel_case(k)
-
+        elif hasattr(obj, '__slots__'):
+            for k in getattr(obj, '__slots__'):
+                value = getattr(obj, k)
+                if value is None:
+                    continue
                 if isinstance(value, Serializer._builtin_types):
                     json_repr[k] = value
-                    serialized = True
-
-                if not serialized and value is not None:
+                else:
                     json_repr[k] = self.default(value)
-
-        if len(json_repr) == 0:
-            return JSONEncoder.default(self, o)
 
         return json_repr
