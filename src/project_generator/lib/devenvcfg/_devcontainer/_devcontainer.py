@@ -24,9 +24,9 @@ class MountType(Enum):
     BIND = 'bind'
     VOLUME = 'volume'
 
-    def to_json(self):
+    def serialize(self):
         '''
-        Return json obeject repr for MountType
+        Return a serializable representation of the object
         '''
         return self.value
 
