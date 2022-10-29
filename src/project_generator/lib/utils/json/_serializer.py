@@ -1,6 +1,7 @@
 '''
 Implementation for JSON serializer
 '''
+
 from enum import Enum
 from json import JSONEncoder
 from re import sub
