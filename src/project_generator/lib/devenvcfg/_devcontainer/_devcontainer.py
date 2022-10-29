@@ -83,6 +83,7 @@ class DevContainer:
     workspace_folder: str = None
     run_args: list[str] = None
     extensions: list[str] = None
+    user_env_probe: bool = None
 
     def to_json(self):
         '''
@@ -229,6 +230,13 @@ class DevContainerBuilder:
         Specify the additional arguments required during the run
         '''
         self._devcontainer.run_args = args
+        return self
+
+    def user_env_probe(self, probe: bool) -> Self:
+        '''
+        Specify whether to inherit user environment variables
+        '''
+        self._devcontainer.user_env_probe = probe
         return self
 
     def build(self) -> DevContainer:
