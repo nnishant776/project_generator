@@ -132,9 +132,6 @@ class AptPackageManager(PackageManager):
             ret = check_call(cmd_remove, buffered_out=buffered_out)
 
         if len(update_bucket) > 0:
-            cmd_update = [*cmd]
-            cmd_update.append("update")
-            ret = check_call(cmd_update, buffered_out=buffered_out)
             cmd_upgrade = [*cmd]
             cmd_upgrade.append("upgrade")
             cmd_upgrade.extend(update_bucket)
