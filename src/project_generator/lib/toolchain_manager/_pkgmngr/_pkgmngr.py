@@ -119,20 +119,20 @@ class AptPackageManager(PackageManager):
         if self.confirmation:
             buffered_out = False
 
-        cmd_install = [*cmd]
         if len(install_bucket) > 0:
+            cmd_install = [*cmd]
             cmd_install.append("install")
             cmd_install.extend(install_bucket)
             ret = check_call(cmd_install, buffered_out=buffered_out)
 
-        cmd_remove = [*cmd]
         if len(remove_bucket) > 0:
+            cmd_remove = [*cmd]
             cmd_remove.append("remove")
             cmd_remove.extend(remove_bucket)
             ret = check_call(cmd_remove, buffered_out=buffered_out)
 
-        cmd_update = [*cmd]
         if len(update_bucket) > 0:
+            cmd_update = [*cmd]
             cmd_update.append("update")
             ret = check_call(cmd_update, buffered_out=buffered_out)
             cmd_upgrade = [*cmd]
@@ -207,20 +207,20 @@ class PacmanPackageManager(PackageManager):
         if self.confirmation:
             buffered_out = False
 
-        cmd_install = [*cmd]
         if len(install_bucket) > 0:
+            cmd_install = [*cmd]
             cmd_install.append("-S")
             cmd_install.extend(install_bucket)
             ret = check_call(cmd_install, buffered_out=buffered_out)
 
-        cmd_remove = [*cmd]
         if len(remove_bucket) > 0:
+            cmd_remove = [*cmd]
             cmd_remove.append("-Rcs")
             cmd_remove.extend(remove_bucket)
             ret = check_call(cmd_remove, buffered_out=buffered_out)
 
-        cmd_update = [*cmd]
         if len(update_bucket) > 0:
+            cmd_update = [*cmd]
             cmd_update.append("-Su")
             cmd_update.extend(update_bucket)
             ret = check_call(cmd_update, buffered_out=buffered_out)
@@ -292,25 +292,22 @@ class YumPackageManager(PackageManager):
         if self.confirmation:
             buffered_out = False
 
-        cmd_install = [*cmd]
         if len(install_bucket) > 0:
+            cmd_install = [*cmd]
             cmd_install.append("install")
             cmd_install.extend(install_bucket)
             ret = check_call(cmd_install, buffered_out=buffered_out)
 
-        cmd_remove = [*cmd]
         if len(remove_bucket) > 0:
+            cmd_remove = [*cmd]
             cmd_remove.append("remove")
             cmd_remove.extend(remove_bucket)
             ret = check_call(cmd_remove, buffered_out=buffered_out)
 
-        cmd_update = [*cmd]
         if len(update_bucket) > 0:
+            cmd_update = [*cmd]
             cmd_update.append("update")
+            cmd_update.extend(update_bucket)
             ret = check_call(cmd_update, buffered_out=buffered_out)
-            cmd_upgrade = [*cmd]
-            cmd_upgrade.append("upgrade")
-            cmd_upgrade.extend(update_bucket)
-            ret = check_call(cmd_upgrade, buffered_out=buffered_out)
 
         return ret
