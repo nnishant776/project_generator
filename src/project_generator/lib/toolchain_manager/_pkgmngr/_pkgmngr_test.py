@@ -69,7 +69,7 @@ class TestAptPackageManager(unittest.TestCase):
 
 class TestPacmanPackageManager(unittest.TestCase):
     '''
-    Test suite for the class AptPackageManager
+    Test suite for the class PacmanPackageManager
     '''
 
     def test_install(self):
@@ -125,8 +125,8 @@ def _check_os() -> PackageHandler | None:
 
     lgr.debug("Parse env file content: %s", env_dict)
     for item in Distribution:
-        if item.name.lower() in [env_dict['ID'], env_dict['ID_LIKE']] or \
-                item.value in [env_dict['ID'], env_dict['ID_LIKE']]:
+        if item.name.lower() in [env_dict.get('ID', ""), env_dict.get('ID_LIKE', "")] or \
+                item.value in [env_dict.get('ID', ""), env_dict.get('ID_LIKE', "")]:
             return PackageHandler.from_distribution(item)
 
     return None
