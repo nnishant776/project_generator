@@ -4,7 +4,7 @@ Implementation for PackageManagerBuilder
 from typing_extensions import Self
 
 from .._distromngr import Distribution, PackageHandler
-from ._pkgmngr import AptPackageManager, PacmanPackageManager
+from ._pkgmngr import AptPackageManager, PacmanPackageManager, YumPackageManager
 from ._pkgmngrif import PackageManager
 
 
@@ -42,6 +42,8 @@ class PackageManagerBuilder:
             pkgmngr = AptPackageManager()
         elif handler == PackageHandler.PACMAN:
             pkgmngr = PacmanPackageManager()
+        elif handler == PackageHandler.YUM:
+            pkgmngr = YumPackageManager()
 
         pkgmngr.confirm(self._confirm)
 
