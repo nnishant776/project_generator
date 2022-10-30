@@ -36,11 +36,11 @@ class PackageManager:
         self.confirmation = cnf
         return self
 
-    def install(self, pkglist: list[str]) -> Self:
+    def install(self, install_list: list[str]) -> Self:
         '''
         Install the given list of packages
         '''
-        for pkg in pkglist:
+        for pkg in install_list:
             val = self.pkglist.get(pkg)
             if val is None:
                 self.pkglist[pkg] = Action.INSTALL
@@ -49,11 +49,11 @@ class PackageManager:
                     f"Package {pkg} listed in at least 2 conflicting actions")
         return self
 
-    def remove(self, pkglist: list[str]) -> Self:
+    def remove(self, remove_list: list[str]) -> Self:
         '''
         Remove the given list of packages
         '''
-        for pkg in pkglist:
+        for pkg in remove_list:
             val = self.pkglist.get(pkg)
             if val is None:
                 self.pkglist[pkg] = Action.REMOVE
@@ -62,7 +62,7 @@ class PackageManager:
                     f"Package {pkg} listed in at least 2 conflicting actions")
         return self
 
-    def update(self, _: list[str] = None) -> Self:
+    def update(self, update_list: list[str] = None) -> Self:
         '''
         Update all or the selected list of packages
         '''
