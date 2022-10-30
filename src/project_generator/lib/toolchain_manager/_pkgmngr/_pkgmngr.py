@@ -65,6 +65,33 @@ class AptPackageManager(PackageManager):
         super(PackageManager, self).__init__(*args, **kw_args)
         self.cmd_name = 'apt-get'
 
+    def sync(self, sync_repo: bool) -> Self:
+        '''
+        Sync the repository metadata
+        '''
+
+        if not sync_repo:
+            return self
+
+        cmd_sync = [self.cmd_name]
+
+        if not self.confirmation:
+            cmd_sync.append("-y")
+
+        buffered_out = True
+
+        if self.confirmation:
+            buffered_out = False
+
+        cmd_sync.append("update")
+
+        ret = check_call(cmd_sync, buffered_out=buffered_out)
+
+        if ret == 0:
+            self.synced = True
+
+        return self
+
     def run(self):
         '''
         Run the built command
@@ -125,6 +152,33 @@ class PacmanPackageManager(PackageManager):
     def __init__(self, *args, **kw_args):
         super(PackageManager, self).__init__(*args, **kw_args)
         self.cmd_name = 'pacman'
+
+    def sync(self, sync_repo: bool) -> Self:
+        '''
+        Sync the repository metadata
+        '''
+
+        if not sync_repo:
+            return self
+
+        cmd_sync = [self.cmd_name]
+
+        if not self.confirmation:
+            cmd_sync.append("--noconfirm")
+
+        buffered_out = True
+
+        if self.confirmation:
+            buffered_out = False
+
+        cmd_sync.append("-Sy")
+
+        ret = check_call(cmd_sync, buffered_out=buffered_out)
+
+        if ret == 0:
+            self.synced = True
+
+        return self
 
     def run(self) -> int:
         '''

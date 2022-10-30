@@ -27,7 +27,7 @@ class PackageManager:
     action: Action = None
     pkglist: dict[str, Action] = {}
     cmd_name: str = None
-        self.cmd_name: str = None
+    synced: bool = False
 
     def confirm(self, cnf: bool = False) -> Self:
         '''
@@ -65,6 +65,12 @@ class PackageManager:
     def update(self, update_list: list[str] = None) -> Self:
         '''
         Update all or the selected list of packages
+        '''
+        return self
+
+    def sync(self, sync_repo: bool) -> Self:
+        '''
+        Sync the repository metadata
         '''
         return self
 
