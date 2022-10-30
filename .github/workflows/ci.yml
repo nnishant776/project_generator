@@ -60,3 +60,29 @@ jobs:
       run: |
         . .venv/bin/activate
         env PYTHONPATH=$PYTHONPATH:src/ pytest
+
+  test-fedora:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+    container:
+      image: fedora:latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        dnf -y update
+        dnf -y install openssl
+        dnf -y reinstall python3.10 python3-pip python3.10-venv
+        python3 -m venv .venv
+        . .venv/bin/activate
+        pip3 install --upgrade pip
+        pip3 install -r requirements-dev.txt
+        pip3 install -r requirements.txt
+    - name: Test with pytest
+      run: |
+        . .venv/bin/activate
+        env PYTHONPATH=$PYTHONPATH:src/ pytest
