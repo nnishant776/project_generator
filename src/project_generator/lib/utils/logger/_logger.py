@@ -5,16 +5,17 @@ import logging
 import os
 
 
-def get_logger(module_name: str) -> logging.Logger:
+def get_logger(module_name: str, stream: logging.Handler = None) -> logging.Logger:
     '''
     Return a configured logger
     '''
     logger = logging.getLogger(module_name)
-    log_handler = logging.StreamHandler()
+    if stream is None:
+        stream = logging.StreamHandler()
     log_formatter = logging.Formatter(
         "%(asctime)s; %(levelname)s; %(name)s; %(message)s")
-    log_handler.setFormatter(log_formatter)
-    logger.addHandler(log_handler)
+    stream.setFormatter(log_formatter)
+    logger.addHandler(stream)
 
     logger.setLevel(_get_log_level_from_env())
 
