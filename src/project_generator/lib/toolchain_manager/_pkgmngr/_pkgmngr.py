@@ -3,10 +3,12 @@ PackageManager implementations
 '''
 
 import subprocess
+from dataclasses import dataclass
 from io import BufferedReader
 
-from project_generator.lib.utils import logger
+from typing_extensions import Self
 
+from project_generator.lib.utils import logger
 from ._pkgmngrif import Action, PackageManager
 
 lgr = logger.get_logger('pkgmngr')
@@ -49,13 +51,14 @@ def check_call(*args, buffered_out: bool = True, **kw_args) -> int:
     return ret
 
 
+@dataclass(slots=True, init=True)
 class AptPackageManager(PackageManager):
     '''
     Package manager implementation for Apt for debian based distros
     '''
 
     def __init__(self, *args, **kw_args):
-        PackageManager.__init__(self, *args, **kw_args)
+        super(PackageManager, self).__init__(*args, **kw_args)
         self.cmd_name = 'apt-get'
 
     def run(self):
@@ -109,13 +112,14 @@ class AptPackageManager(PackageManager):
         return ret
 
 
+@dataclass(slots=True, init=True)
 class PacmanPackageManager(PackageManager):
     '''
     Package manager implementation for Pacman for debian based distros
     '''
 
-    def __init__(self):
-        PackageManager.__init__(self)
+    def __init__(self, *args, **kw_args):
+        super(PackageManager, self).__init__(*args, **kw_args)
         self.cmd_name = 'pacman'
 
     def run(self) -> int:

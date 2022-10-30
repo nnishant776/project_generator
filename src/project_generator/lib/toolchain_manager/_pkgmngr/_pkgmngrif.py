@@ -3,6 +3,7 @@ Interface for package manager
 '''
 
 from enum import Enum
+from dataclasses import dataclass
 
 from typing_extensions import Self
 
@@ -16,15 +17,16 @@ class Action(Enum):
     UPDATE = 'update'
 
 
+@dataclass(slots=True, init=True)
 class PackageManager:
     '''
     Abstraction to represent a package manager
     '''
 
-    def __init__(self):
-        self.confirmation: bool = None
-        self.action: Action = None
-        self.pkglist: dict[str, Action] = {}
+    confirmation: bool = None
+    action: Action = None
+    pkglist: dict[str, Action] = {}
+    cmd_name: str = None
         self.cmd_name: str = None
 
     def confirm(self, cnf: bool = False) -> Self:
