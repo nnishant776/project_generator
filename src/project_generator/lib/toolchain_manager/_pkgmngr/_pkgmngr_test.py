@@ -129,9 +129,9 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        mngr.install(['gcc'])
+        mngr.install(['gcc', 'clang'])
         self.assertEqual(mngr.command()[0].flatten(), [
-                         "pacman", "--noconfirm", "-S",  "gcc"])
+                         "pacman", "--noconfirm", "-S",  "gcc", "clang"])
 
         if _check_os() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
