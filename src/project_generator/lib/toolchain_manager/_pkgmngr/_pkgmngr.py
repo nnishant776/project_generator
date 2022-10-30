@@ -226,3 +226,91 @@ class PacmanPackageManager(PackageManager):
             ret = check_call(cmd_update, buffered_out=buffered_out)
 
         return ret
+
+
+@dataclass(slots=True, init=True)
+class YumPackageManager(PackageManager):
+    '''
+    Package manager implementation for YUM for RHEL based distros
+    '''
+
+    def __init__(self, *args, **kw_args):
+        super(PackageManager, self).__init__(*args, **kw_args)
+        self.cmd_name = 'yum'
+
+    def sync(self, sync_repo: bool) -> Self:
+        '''
+        Sync the repository metadata
+        '''
+
+        if not sync_repo:
+            return self
+
+        cmd_sync = [self.cmd_name]
+
+        if not self.confirmation:
+            cmd_sync.append("-y")
+
+        buffered_out = True
+
+        if self.confirmation:
+            buffered_out = False
+
+        cmd_sync.append("update")
+
+        ret = check_call(cmd_sync, buffered_out=buffered_out)
+
+        if ret == 0:
+            self.synced = True
+
+        return self
+
+    def run(self):
+        '''
+        Run the built command
+        '''
+        install_bucket: list[str] = []
+        remove_bucket: list[str] = []
+        update_bucket: list[str] = []
+
+        for key, val in self.pkglist.items():
+            if val == Action.INSTALL:
+                install_bucket.append(key)
+            elif val == Action.REMOVE:
+                remove_bucket.append(key)
+            elif val == Action.UPDATE:
+                update_bucket.append(key)
+
+        cmd = [self.cmd_name]
+
+        if not self.confirmation:
+            cmd.append("-y")
+
+        ret = 0
+        buffered_out = True
+
+        if self.confirmation:
+            buffered_out = False
+
+        cmd_install = [*cmd]
+        if len(install_bucket) > 0:
+            cmd_install.append("install")
+            cmd_install.extend(install_bucket)
+            ret = check_call(cmd_install, buffered_out=buffered_out)
+
+        cmd_remove = [*cmd]
+        if len(remove_bucket) > 0:
+            cmd_remove.append("remove")
+            cmd_remove.extend(remove_bucket)
+            ret = check_call(cmd_remove, buffered_out=buffered_out)
+
+        cmd_update = [*cmd]
+        if len(update_bucket) > 0:
+            cmd_update.append("update")
+            ret = check_call(cmd_update, buffered_out=buffered_out)
+            cmd_upgrade = [*cmd]
+            cmd_upgrade.append("upgrade")
+            cmd_upgrade.extend(update_bucket)
+            ret = check_call(cmd_upgrade, buffered_out=buffered_out)
+
+        return ret
