@@ -22,7 +22,7 @@ class TestPackageManagerBuilder(unittest.TestCase):
         Test case for build function
         '''
         mngr = PackageManagerBuilder() \
-            .confirm_action(True) \
+            .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
         self.assertEqual(
@@ -44,7 +44,12 @@ class TestAptPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        self.assertEqual(mngr.install(['gcc']).run(), 0)
+        mngr.install(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "apt-get", "-y", "install",  "gcc"])
+
+        if _check_os() == PackageHandler.APT:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
         '''
@@ -54,17 +59,61 @@ class TestAptPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        self.assertEqual(mngr.update(['gcc']).run(), 0)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "apt-get", "-y", "upgrade",  "gcc"])
+
+        if _check_os() == PackageHandler.APT:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
         '''
         Test the remove function
         '''
         mngr = PackageManagerBuilder() \
-            .confirm_action(True) \
+            .confirm_action(False) \
             .distribution(Distribution.UBUNTU) \
             .build()
-        self.assertEqual(mngr.remove(['clang']).run(), 0)
+        mngr.remove(['clang'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "apt-get", "-y", "remove",  "clang"])
+
+        if _check_os() == PackageHandler.APT:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.UBUNTU) \
+            .build()
+        mngr.sync(True)
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "apt-get", "-y", "update"])
+
+        if _check_os() == PackageHandler.APT:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync_and_upgrade(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.UBUNTU) \
+            .build()
+        mngr.sync(True)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "apt-get", "-y", "update"])
+
+        self.assertEqual(mngr.command()[1].flatten(), [
+                         "apt-get", "-y", "upgrade", "gcc"])
+
+        if _check_os() == PackageHandler.APT:
+            self.assertEqual(mngr.commit(), 0)
 
 
 class TestPacmanPackageManager(unittest.TestCase):
@@ -80,7 +129,12 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        self.assertEqual(mngr.install(['gcc', 'clang']).run(), 0)
+        mngr.install(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "pacman", "--noconfirm", "-S",  "gcc"])
+
+        if _check_os() == PackageHandler.PACMAN:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
         '''
@@ -90,7 +144,12 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        self.assertEqual(mngr.update(['gcc']).run(), 0)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "pacman", "--noconfirm", "-Su",  "gcc"])
+
+        if _check_os() == PackageHandler.PACMAN:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
         '''
@@ -100,7 +159,46 @@ class TestPacmanPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.ARCH) \
             .build()
-        self.assertEqual(mngr.remove(['clang']).run(), 0)
+        mngr.remove(['clang'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "pacman", "--noconfirm", "-Rcs",  "clang"])
+
+        if _check_os() == PackageHandler.PACMAN:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.ARCH) \
+            .build()
+        mngr.sync(True)
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "pacman", "--noconfirm", "-Sy"])
+
+        if _check_os() == PackageHandler.PACMAN:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync_and_upgrade(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.ARCH) \
+            .build()
+        mngr.sync(True)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "pacman", "--noconfirm", "-Sy"])
+
+        self.assertEqual(mngr.command()[1].flatten(), [
+                         "pacman", "--noconfirm", "-Su", "gcc"])
+
+        if _check_os() == PackageHandler.PACMAN:
+            self.assertEqual(mngr.commit(), 0)
 
 
 class TestYumPackageManager(unittest.TestCase):
@@ -116,7 +214,12 @@ class TestYumPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.RHEL) \
             .build()
-        self.assertEqual(mngr.install(['gcc', 'clang']).run(), 0)
+        mngr.install(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "yum", "-y", "install",  "gcc"])
+
+        if _check_os() == PackageHandler.YUM:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
         '''
@@ -126,7 +229,12 @@ class TestYumPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.RHEL) \
             .build()
-        self.assertEqual(mngr.update(['gcc']).run(), 0)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "yum", "-y", "upgrade",  "gcc"])
+
+        if _check_os() == PackageHandler.YUM:
+            self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
         '''
@@ -136,7 +244,46 @@ class TestYumPackageManager(unittest.TestCase):
             .confirm_action(False) \
             .distribution(Distribution.RHEL) \
             .build()
-        self.assertEqual(mngr.remove(['clang']).run(), 0)
+        mngr.remove(['clang'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "yum", "-y", "remove",  "clang"])
+
+        if _check_os() == PackageHandler.YUM:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.RHEL) \
+            .build()
+        mngr.sync(True)
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "yum", "-y", "makecache"])
+
+        if _check_os() == PackageHandler.YUM:
+            self.assertEqual(mngr.commit(), 0)
+
+    def test_sync_and_upgrade(self):
+        '''
+        Test the sync function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.RHEL) \
+            .build()
+        mngr.sync(True)
+        mngr.update(['gcc'])
+        self.assertEqual(mngr.command()[0].flatten(), [
+                         "yum", "-y", "makecache"])
+
+        self.assertEqual(mngr.command()[1].flatten(), [
+                         "yum", "-y", "upgrade", "gcc"])
+
+        if _check_os() == PackageHandler.YUM:
+            self.assertEqual(mngr.commit(), 0)
 
 
 def _check_os() -> PackageHandler | None:
@@ -169,22 +316,4 @@ def _check_os() -> PackageHandler | None:
 
 
 if __name__ == '__main__':
-    pkg_handler = _check_os()
-    if pkg_handler == PackageHandler.APT:
-        lgr.debug("PackageHandler = %s", PackageHandler.APT)
-        TestAptPackageManager().test_install()
-        TestAptPackageManager().test_remove()
-        TestAptPackageManager().test_update()
-    elif pkg_handler == PackageHandler.PACMAN:
-        lgr.debug("PackageHandler = %s", PackageHandler.PACMAN)
-        TestPacmanPackageManager().test_install()
-        TestPacmanPackageManager().test_remove()
-        TestPacmanPackageManager().test_update()
-    elif pkg_handler == PackageHandler.YUM:
-        lgr.debug("PackageHandler = %s", PackageHandler.YUM)
-        TestYumPackageManager().test_install()
-        TestYumPackageManager().test_remove()
-        TestYumPackageManager().test_update()
-    else:
-        lgr.warning("No supported distribution detected")
-        exit(1)
+    unittest.main()
