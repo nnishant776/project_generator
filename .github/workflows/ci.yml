@@ -26,9 +26,9 @@ jobs:
         apt -y update
         apt -y install openssl
         apt -y install --reinstall python3.10 python3-pip python3.10-venv
-        python3 -m pip install --upgrade pip
         python3 -m venv .venv
         . .venv/bin/activate
+        pip3 install --upgrade pip
         pip3 install -r requirements-dev.txt
         pip3 install -r requirements.txt
     - name: Test with pytest
@@ -47,16 +47,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         pacman --noconfirm -Syu
-        python -m pip install --upgrade pip
+        pacman --noconfirm -S python-pip
         python -m venv .venv
         . .venv/bin/activate
+        pip3 install --upgrade pip
         pip3 install -r requirements-dev.txt
         pip3 install -r requirements.txt
     - name: Test with pytest
