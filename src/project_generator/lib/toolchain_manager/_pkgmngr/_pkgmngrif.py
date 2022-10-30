@@ -7,6 +7,8 @@ from dataclasses import dataclass
 
 from typing_extensions import Self
 
+from project_generator.lib.utils.command import Command
+
 
 class Action(Enum):
     '''
@@ -17,7 +19,7 @@ class Action(Enum):
     UPDATE = 'update'
 
 
-@dataclass(slots=True, init=True)
+@dataclass(slots=True, init=True, kw_only=True)
 class PackageManager:
     '''
     Abstraction to represent a package manager
@@ -27,10 +29,12 @@ class PackageManager:
     action: Action = None
     pkglist: dict[str, Action] = None
     cmd_name: str = None
-    synced: bool = False
+    sync_primed: bool = False
+    command_list: list[Command] = None
 
     def __init__(self, *args, **kw_args):
         self.confirmation = False
+        self.command_list: list[Command] = []
         self.pkglist = {}
 
     def confirm(self, cnf: bool = False) -> Self:
@@ -66,19 +70,25 @@ class PackageManager:
                     f"Package {pkg} listed in at least 2 conflicting actions")
         return self
 
-    def update(self, update_list: list[str] = None) -> Self:
+    def update(self, update_list: list[str]) -> Self:
         '''
         Update all or the selected list of packages
         '''
         return self
 
-    def sync(self, sync_repo: bool) -> Self:
+    def sync(self, sync_repo: bool = False) -> Self:
         '''
         Sync the repository metadata
         '''
         return self
 
-    def run(self) -> int:
+    def command(self) -> list[Command]:
+        '''
+        Return the raw accumulated commands so far
+        '''
+        return self.command_list
+
+    def commit(self) -> int:
         '''
         Run the package manager commands
         '''
