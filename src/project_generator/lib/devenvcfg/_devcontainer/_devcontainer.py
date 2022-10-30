@@ -165,7 +165,7 @@ class DevContainerBuilder:
             dockerfile, context, args, target, cache_from)
         return self
 
-    def forwarded_ports(self, ports: list[int]) -> Self:
+    def forward_ports(self, ports: list[int]) -> Self:
         '''
         Specify the list of ports to be forwarded from the container
         '''
