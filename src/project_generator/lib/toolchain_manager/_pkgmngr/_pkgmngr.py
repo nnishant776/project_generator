@@ -45,7 +45,11 @@ def check_call(*args, buffered_out: bool = True, **kw_args) -> int:
         lgr.fatal("Failed to find executable '%s'", exec_err.filename)
     except subprocess.CalledProcessError as run_err:
         lgr.error(
-            "Failed to run command '%s'. Process returned '%d' with output: '%s'", ' '.join(*args), run_err.returncode, run_err.output)
+            "Failed to run command '%s'. Process returned '%d' with output: '%s'",
+            ' '.join(*args),
+            run_err.returncode,
+            run_err.output,
+        )
         ret = run_err.returncode
 
     return ret
