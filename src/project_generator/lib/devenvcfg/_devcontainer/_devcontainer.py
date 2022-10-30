@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from typing_extensions import Self
-from project_generator.lib.utils.serializer import Serializer
+from project_generator.lib.utils.serializer import DictSerializable
 
 
 class ContainerRuntime(Enum):
@@ -30,9 +30,21 @@ class MountType(Enum):
         '''
         return self.value
 
+    @classmethod
+    def deserialize(cls, obj) -> Self:
+        '''
+        Return a `DevContainer` object with values obtained from the supplied dict
+        '''
+        for item in cls:
+            if item.value == obj:
+                return item
+
+        raise AttributeError(
+            f"Matching enum member with name {obj} was not found", name=obj)
+
 
 @dataclass(slots=True)
-class MountSpec:
+class MountSpec(DictSerializable):
     '''
     Mount definition for dev container
     '''
@@ -47,9 +59,28 @@ class MountSpec:
         if mount_type is None:
             self.type = MountType.BIND
 
+    @classmethod
+    def from_dict(cls, obj: dict) -> Self:
+        '''
+        Construct a `DevContainer` from the supplied dict
+        '''
+        deser_obj = cls(source=None)
+
+        for key in getattr(cls, '__slots__'):
+            val = obj.get(key, None)
+            if val is None:
+                continue
+
+            if key == 'type':
+                val = MountType.deserialize(val)
+
+            setattr(deser_obj, key, val)
+
+        return deser_obj
+
 
 @dataclass(slots=True)
-class ContainerBuildSpec:
+class ContainerBuildSpec(DictSerializable):
     '''
     A class representing the json spec for building the dev container
     '''
@@ -60,9 +91,26 @@ class ContainerBuildSpec:
     target: str = None
     cache_from: str | list[str] = None
 
+    @classmethod
+    def from_dict(cls, obj: dict) -> Self:
+        '''
+        Construct a `DevContainer` from the supplied dict
+        '''
+        deser_obj = cls(dockerfile=None, context=None)
+
+        for key in getattr(cls, '__slots__'):
+            val = obj.get(key, None)
+
+            if val is None:
+                continue
+
+            setattr(deser_obj, key, val)
+
+        return deser_obj
+
 
 @dataclass(slots=True)
-class DevContainer:
+class DevContainer(DictSerializable):
     '''
     Reprsents the devcontainer configuration
     '''
@@ -86,11 +134,31 @@ class DevContainer:
     extensions: list[str] = None
     user_env_probe: bool = None
 
-    def to_json(self):
+    @classmethod
+    def from_dict(cls, obj: dict) -> Self:
         '''
-        Return a JSON repr of dev container
+        Construct a `DevContainer` from the supplied dict
         '''
-        return Serializer(transform_keys=TransformType.CAMEL_CASE, bypass=True).default(self)
+        deser_obj = cls()
+
+        for key in getattr(cls, '__slots__'):
+            val = obj.get(key, None)
+
+            if val is None:
+                continue
+
+            if key == 'build':
+                val = ContainerBuildSpec.from_dict(val)
+            elif key == 'mounts':
+                mnts = []
+                for item in val:
+                    mnt_spec = MountSpec.deserialize(item)
+                    mnts.append(mnt_spec)
+                val = mnts
+
+            setattr(deser_obj, key, val)
+
+        return deser_obj
 
 
 class DevContainerBuilder:
