@@ -103,6 +103,42 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.remove(['clang']).run(), 0)
 
 
+class TestYumPackageManager(unittest.TestCase):
+    '''
+    Test suite for the class YumPackageManager
+    '''
+
+    def test_install(self):
+        '''
+        Test the install function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.RHEL) \
+            .build()
+        self.assertEqual(mngr.install(['gcc', 'clang']).run(), 0)
+
+    def test_update(self):
+        '''
+        Test the update function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.RHEL) \
+            .build()
+        self.assertEqual(mngr.update(['gcc']).run(), 0)
+
+    def test_remove(self):
+        '''
+        Test the remove function
+        '''
+        mngr = PackageManagerBuilder() \
+            .confirm_action(False) \
+            .distribution(Distribution.RHEL) \
+            .build()
+        self.assertEqual(mngr.remove(['clang']).run(), 0)
+
+
 def _check_os() -> PackageHandler | None:
     # read /etc/os-release or /lib/os-release environment file
     os_rel = ''
@@ -144,6 +180,11 @@ if __name__ == '__main__':
         TestPacmanPackageManager().test_install()
         TestPacmanPackageManager().test_remove()
         TestPacmanPackageManager().test_update()
+    elif pkg_handler == PackageHandler.YUM:
+        lgr.debug("PackageHandler = %s", PackageHandler.YUM)
+        TestYumPackageManager().test_install()
+        TestYumPackageManager().test_remove()
+        TestYumPackageManager().test_update()
     else:
         lgr.warning("No supported distribution detected")
         exit(1)
