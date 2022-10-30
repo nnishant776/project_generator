@@ -62,7 +62,7 @@ class AptPackageManager(PackageManager):
     '''
 
     def __init__(self, *args, **kw_args):
-        super(PackageManager, self).__init__(*args, **kw_args)
+        PackageManager.__init__(self, *args, **kw_args)
         self.cmd_name = 'apt-get'
 
     def sync(self, sync_repo: bool) -> Self:
@@ -147,7 +147,7 @@ class PacmanPackageManager(PackageManager):
     '''
 
     def __init__(self, *args, **kw_args):
-        super(PackageManager, self).__init__(*args, **kw_args)
+        PackageManager.__init__(self, *args, **kw_args)
         self.cmd_name = 'pacman'
 
     def sync(self, sync_repo: bool) -> Self:
@@ -232,7 +232,7 @@ class YumPackageManager(PackageManager):
     '''
 
     def __init__(self, *args, **kw_args):
-        super(PackageManager, self).__init__(*args, **kw_args)
+        PackageManager.__init__(self, *args, **kw_args)
         self.cmd_name = 'yum'
 
     def sync(self, sync_repo: bool) -> Self:

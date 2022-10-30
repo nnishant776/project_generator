@@ -25,9 +25,13 @@ class PackageManager:
 
     confirmation: bool = None
     action: Action = None
-    pkglist: dict[str, Action] = {}
+    pkglist: dict[str, Action] = None
     cmd_name: str = None
     synced: bool = False
+
+    def __init__(self, *args, **kw_args):
+        self.confirmation = False
+        self.pkglist = {}
 
     def confirm(self, cnf: bool = False) -> Self:
         '''
