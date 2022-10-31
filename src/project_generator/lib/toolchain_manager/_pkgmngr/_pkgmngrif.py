@@ -32,7 +32,7 @@ class PackageManager:
     sync_primed: bool = False
     command_list: list[Command] = None
 
-    def __init__(self, *args, **kw_args):
+    def __init__(self):
         self.confirmation = False
         self.command_list: list[Command] = []
         self.pkglist = {}
@@ -48,26 +48,12 @@ class PackageManager:
         '''
         Install the given list of packages
         '''
-        for pkg in install_list:
-            val = self.pkglist.get(pkg)
-            if val is None:
-                self.pkglist[pkg] = Action.INSTALL
-            elif val == Action.REMOVE:
-                raise ValueError(
-                    f"Package {pkg} listed in at least 2 conflicting actions")
         return self
 
     def remove(self, remove_list: list[str]) -> Self:
         '''
         Remove the given list of packages
         '''
-        for pkg in remove_list:
-            val = self.pkglist.get(pkg)
-            if val is None:
-                self.pkglist[pkg] = Action.REMOVE
-            elif val in [Action.INSTALL, Action.UPDATE]:
-                raise ValueError(
-                    f"Package {pkg} listed in at least 2 conflicting actions")
         return self
 
     def update(self, update_list: list[str]) -> Self:
