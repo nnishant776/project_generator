@@ -4,6 +4,7 @@ Module which configures a devcontaner specification
 
 from dataclasses import dataclass
 from enum import Enum
+from copy import deepcopy
 
 from typing_extensions import Self
 from project_generator.lib.utils.serializer import DictSerializable
@@ -53,6 +54,7 @@ class MountSpec(DictSerializable):
     type: MountType
 
     def __init__(self, source: str, target: str = None, mount_type: MountType | None = None):
+        DictSerializable.__init__(self)
         self.source = source
         if target is None or target == '':
             self.target = self.source
@@ -104,7 +106,10 @@ class ContainerBuildSpec(DictSerializable):
             if val is None:
                 continue
 
-            setattr(deser_obj, key, val)
+            if key == 'args' or key == 'cache_from':
+                setattr(deser_obj, key, deepcopy(val))
+            else:
+                setattr(deser_obj, key, val)
 
         return deser_obj
 
@@ -201,14 +206,14 @@ class DevContainerBuilder:
         '''
         Specify the per-process environment variables for the container
         '''
-        self._devcontainer.remote_env = remote_env_vars
+        self._devcontainer.remote_env = deepcopy(remote_env_vars)
         return self
 
     def contaniner_env(self, contaniner_env_vars: dict[str, str]) -> Self:
         '''
         Specify the container environment variables for the container
         '''
-        self._devcontainer.container_env = contaniner_env_vars
+        self._devcontainer.container_env = deepcopy(contaniner_env_vars)
         return self
 
     def build_spec(self, spec: ContainerBuildSpec) -> Self:
@@ -237,7 +242,7 @@ class DevContainerBuilder:
         '''
         Specify the list of ports to be forwarded from the container
         '''
-        self._devcontainer.forward_ports = ports
+        self._devcontainer.forward_ports = deepcopy(ports)
         return self
 
     def override_command(self, override: bool) -> Self:
@@ -258,14 +263,14 @@ class DevContainerBuilder:
         '''
         Specify the list of security lables to be applied on the dev container
         '''
-        self._devcontainer.security_opt = options
+        self._devcontainer.security_opt = deepcopy(options)
         return self
 
     def capabilities(self, caps: list[str]) -> Self:
         '''
         Specify the list of capabilities for the container
         '''
-        self._devcontainer.cap_add = caps
+        self._devcontainer.cap_add = deepcopy(caps)
         return self
 
     def mounts(self, mount_list: list[MountSpec]) -> Self:
@@ -276,7 +281,7 @@ class DevContainerBuilder:
             self._devcontainer.mounts = []
 
         for mount_spec in mount_list:
-            self._devcontainer.mounts.append(mount_spec)
+            self._devcontainer.mounts.append(deepcopy(mount_spec))
 
         return self
 
@@ -298,7 +303,7 @@ class DevContainerBuilder:
         '''
         Specify the additional arguments required during the run
         '''
-        self._devcontainer.run_args = args
+        self._devcontainer.run_args = deepcopy(args)
         return self
 
     def user_env_probe(self, probe: bool) -> Self:
