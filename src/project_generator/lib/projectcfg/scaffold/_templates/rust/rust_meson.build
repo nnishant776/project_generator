@@ -1,0 +1,41 @@
+project(
+    '{{ project_name }}', 'rust',
+    version: '{{ version }}',
+    default_options: [
+        'warning_level=3',
+    ],
+)
+
+cargo = find_program('cargo')
+
+## setup build profile
+
+# get the meson native buildtype specification
+buildtype = get_option('buildtype')
+
+# get profile selected in the option specification
+profile = get_option('profile')
+
+# override the profile value with the meson native buildtype
+# if the default one from the options is selected
+if profile == 'dev'
+    if buildtype == 'debugoptimized'
+        profile = 'release'
+    elif buildtype == 'release'
+        profile = 'prod'
+    endif
+endif
+
+cargo_build = custom_target(
+    meson.project_name(),
+    build_by_default: true,
+    console: true,
+    output: meson.project_name(),
+    command: [
+        cargo,
+        'build',
+        '--manifest-path', join_paths(meson.source_root(), 'Cargo.toml'),
+        '--target-dir', meson.build_root(),
+        '--profile', profile,
+    ]
+)

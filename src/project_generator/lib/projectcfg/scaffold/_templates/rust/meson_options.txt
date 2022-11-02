@@ -1,0 +1,1 @@
+option('profile', type: 'combo', value: 'dev', choices: ['dev', 'debugoptimized', 'release', 'prod'])
