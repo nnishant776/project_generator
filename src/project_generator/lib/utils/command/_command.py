@@ -184,7 +184,7 @@ def _check_call(*args, buffered_out: bool = True, **kw_args) -> int:
                     reader = BufferedReader(out)
                 for line in iter(reader.readline, b''):
                     logger.debug(
-                        "(%s) - %s", process.args[0], line.decode('utf8').strip())
+                        "(%s) - %s", process.args[0], line.decode('utf-8').strip())
                 process.stdout.flush()
 
         ret = process.wait()

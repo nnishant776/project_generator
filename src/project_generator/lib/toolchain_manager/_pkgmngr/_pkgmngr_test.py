@@ -300,7 +300,7 @@ def _check_os() -> PackageHandler | None:
 
     env_dict = {}
 
-    with open(os_rel, encoding='utf8') as rel_file:
+    with open(os_rel, encoding='utf-8') as rel_file:
         for line in rel_file:
             values = line.strip().split('=')
             if values[0] in ['ID', 'ID_LIKE']:
