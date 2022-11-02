@@ -1,0 +1,22 @@
+project('{{ project_name }}', 'c', 'cpp',
+    version: '{{ version }}',
+    default_options: [
+        'warning_level=3',
+        'c_std=c11',
+        'cpp_std=c++20',
+        'buildtype=debugoptimized'
+    ]
+)
+
+thread = dependency('threads')
+
+executable(meson.project_name(),
+    'src/main.cpp',
+    #include_directories: [
+    #    'include'
+    #],
+    dependencies: [
+        thread
+    ],
+    install: false
+)
