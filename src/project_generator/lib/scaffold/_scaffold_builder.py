@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from typing_extensions import Self
 
-from .._projcfg import ProjectTemplate
+from project_generator.lib.projectcfg import ProjectTemplate
 from ._generator import (CppScaffoldGenerator, CScaffoldGenerator,
                          GoScaffoldGenerator, RustScaffoldGenerator,
                          ScaffoldGenerator)

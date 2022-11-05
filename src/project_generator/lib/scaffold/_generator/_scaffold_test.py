@@ -5,7 +5,8 @@ Test module for project scaffold generator
 import unittest
 import os
 
-from project_generator.lib.projectcfg import scaffold, ProjectTemplate
+from project_generator.lib.scaffold import ProjectScaffoldBuilder
+from project_generator.lib.projectcfg import ProjectTemplate
 
 
 class TestScaffold(unittest.TestCase):
@@ -17,7 +18,7 @@ class TestScaffold(unittest.TestCase):
         '''
         Test C project generation
         '''
-        scaffold_builder = scaffold.ProjectScaffoldBuilder().project_name(
+        scaffold_builder = ProjectScaffoldBuilder().project_name(
             'arknights-c').version("0.2.1").template(ProjectTemplate.C).build()
         scaffold_builder.build_scaffold()
         self.assertEqual(os.path.exists('arknights-c'), True)
@@ -26,7 +27,7 @@ class TestScaffold(unittest.TestCase):
         '''
         Test C++ project generation
         '''
-        scaffold_builder = scaffold.ProjectScaffoldBuilder().project_name(
+        scaffold_builder = ProjectScaffoldBuilder().project_name(
             'arknights-cpp').version("0.2.1").template(ProjectTemplate.CPP).build()
         scaffold_builder.build_scaffold()
         self.assertEqual(os.path.exists('arknights-cpp'), True)
@@ -35,7 +36,7 @@ class TestScaffold(unittest.TestCase):
         '''
         Test Rust project generation
         '''
-        scaffold_builder = scaffold.ProjectScaffoldBuilder().project_name(
+        scaffold_builder = ProjectScaffoldBuilder().project_name(
             'arknights-rs').version("0.1.0").template(ProjectTemplate.RUST).build()
         scaffold_builder.build_scaffold()
         self.assertEqual(os.path.exists('arknights-rs'), True)
@@ -44,7 +45,7 @@ class TestScaffold(unittest.TestCase):
         '''
         Test Go project generation
         '''
-        scaffold_builder = scaffold.ProjectScaffoldBuilder().project_name(
+        scaffold_builder = ProjectScaffoldBuilder().project_name(
             'arknights-go').version("0.1.0").template(ProjectTemplate.GO).build()
         scaffold_builder.build_scaffold()
         self.assertEqual(os.path.exists('arknights-go'), True)

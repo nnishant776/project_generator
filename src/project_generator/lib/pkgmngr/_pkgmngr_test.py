@@ -4,9 +4,9 @@ PackageManager tests
 import os
 import unittest
 
-from project_generator.lib.toolchain_manager import (Distribution,
-                                                     PackageHandler,
-                                                     PackageManagerBuilder)
+from project_generator.lib.distromngr import (Distribution,
+                                              PackageHandler)
+from project_generator.lib.pkgmngr import PackageManagerBuilder
 from project_generator.lib.utils.logger import get_logger
 
 lgr = get_logger('test-pkgmngr')

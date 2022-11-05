@@ -3,7 +3,7 @@ Implementation for PackageManagerBuilder
 '''
 from typing_extensions import Self
 
-from .._distromngr import Distribution, PackageHandler
+from project_generator.lib.distromngr import Distribution, PackageHandler
 from ._apt import AptPackageManager
 from ._pacman import PacmanPackageManager
 from ._yum import YumPackageManager
