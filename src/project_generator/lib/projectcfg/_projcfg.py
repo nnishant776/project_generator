@@ -9,6 +9,7 @@ from copy import deepcopy
 from typing_extensions import Self
 
 from project_generator.lib.devenvcfg import devcontainer
+from project_generator.lib.toolchain import Toolchain
 
 
 class ProjectTemplate(Enum):
@@ -19,18 +20,6 @@ class ProjectTemplate(Enum):
     CPP = 'cpp'
     RUST = 'rust'
     GO = 'go'
-    PYTHON = 'python'
-
-
-class Toolchain(Enum):
-    '''
-    An enumeration listing all the supported toolchains
-    '''
-    C = 'c'
-    CPP = 'cpp'
-    RUST = 'rust'
-    GO = 'go'
-    GTK = 'gtk'
     PYTHON = 'python'
 
 
