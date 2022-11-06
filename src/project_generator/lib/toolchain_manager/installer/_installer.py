@@ -13,9 +13,8 @@ from typing_extensions import Self
 
 from project_generator.lib.toolchain import Toolchain
 from project_generator.lib.distromngr import Distribution
-from project_generator.lib.pkgmngr import PackageManagerBuilder
 from project_generator.lib.utils.command import CommandBuilder
-from ._util import _download_go_toolchain, _download_rust_toolchain
+from ._util import _download_go_toolchain, _download_rust_toolchain, _install_tools_packages
 
 
 @dataclass(slots=True)
@@ -26,9 +25,14 @@ class Installer:
 
     _distribution: Distribution
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         Install the relevant packages based on the toolchain
+        '''
+
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        Install common accompanying addtional tools for each toolchain
         '''
 
 
@@ -38,38 +42,44 @@ class _CToolchainInstaller(Installer):
     C Toolchain installer
     '''
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         C toolchain installer
         '''
 
         pkg_list = Toolchain.C.packages_for(self._distribution)
-        pkg_manager = PackageManagerBuilder() \
-            .confirm_action(False) \
-            .distribution(self._distribution) \
-            .build()
+        return _install_tools_packages(self._distribution, pkg_list)
 
-        return pkg_manager.install(pkg_list).commit()
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        C additional tools installer
+        '''
+
+        pkg_list = Toolchain.C.extra_packages_for(self._distribution)
+        return _install_tools_packages(self._distribution, pkg_list)
 
 
 @dataclass(slots=True)
 class _CppToolchainInstaller(Installer):
     '''
-    C Toolchain installer
+    C++ Toolchain installer
     '''
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         C++ toolchain installer
         '''
 
         pkg_list = Toolchain.CPP.packages_for(self._distribution)
-        pkg_manager = PackageManagerBuilder() \
-            .confirm_action(False) \
-            .distribution(self._distribution) \
-            .build()
+        return _install_tools_packages(self._distribution, pkg_list)
 
-        return pkg_manager.install(pkg_list).commit()
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        C++ additional tools installer
+        '''
+
+        pkg_list = Toolchain.CPP.extra_packages_for(self._distribution)
+        return _install_tools_packages(self._distribution, pkg_list)
 
 
 @dataclass(slots=True)
@@ -78,18 +88,21 @@ class _GtkToolchainInstaller(Installer):
     Gtk Toolchain installer
     '''
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         Gtk toolchain installer
         '''
 
         pkg_list = Toolchain.GTK.packages_for(self._distribution)
-        pkg_manager = PackageManagerBuilder() \
-            .confirm_action(False) \
-            .distribution(self._distribution) \
-            .build()
+        return _install_tools_packages(self._distribution, pkg_list)
 
-        return pkg_manager.install(pkg_list).commit()
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        Gtk additional tools installer
+        '''
+
+        pkg_list = Toolchain.GTK.extra_packages_for(self._distribution)
+        return _install_tools_packages(self._distribution, pkg_list)
 
 
 @dataclass(slots=True)
@@ -98,16 +111,21 @@ class _GoToolchainInstaller(Installer):
     Go Toolchain installer
     '''
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         Go toolchain installer
         '''
 
         go_tar_file = _download_go_toolchain()
 
-        go_root = os.getenv('GOROOT')
-        if go_root is None or go_root == "":
-            go_root = "/usr/local/sdks/go"
+        go_root: str = None
+
+        if path is not None and path != "":
+            go_root = path
+        else:
+            go_root = os.getenv('GOROOT')
+            if go_root is None or go_root == "":
+                go_root = "/usr/local/sdks/go"
 
         extract_path = "/tmp/golang"
 
@@ -128,6 +146,32 @@ class _GoToolchainInstaller(Installer):
 
         os.remove(go_tar_file)
 
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        Go additional tools installer
+        '''
+
+        go_tools_list = [
+            'github.com/cweill/gotests/gotests@latest',
+            'github.com/fatih/gomodifytags@latest',
+            'github.com/josharian/impl@latest',
+            'github.com/haya14busa/goplay/cmd/goplay@latest',
+            'github.com/go-delve/delve/cmd/dlv@latest',
+            'honnef.co/go/tools/cmd/staticcheck@latest',
+            'golang.org/x/tools/gopls@latest',
+            'github.com/ramya-rao-a/go-outline@latest'
+        ]
+
+        cmd = CommandBuilder() \
+            .program('go') \
+            .subcommand('install') \
+            .args(go_tools_list) \
+            .build()
+
+        ret = cmd.run()
+        if ret != 0:
+            raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten))
+
 
 @dataclass(slots=True)
 class _RustToolchainInstaller(Installer):
@@ -135,7 +179,7 @@ class _RustToolchainInstaller(Installer):
     Rust Toolchain installer
     '''
 
-    def install_toolchain(self) -> int:
+    def install_toolchain(self, path: str = None) -> int:
         '''
         Rust toolchain installer
         '''
@@ -150,6 +194,22 @@ class _RustToolchainInstaller(Installer):
             raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten()))
 
         os.remove(rustup_init_bin)
+
+    def install_additional_tools(self, path: str = None) -> int:
+        '''
+        Rust additional tools installer
+        '''
+
+        cmd = CommandBuilder() \
+            .program('rustup') \
+            .subcommand('component') \
+            .subcommand('add') \
+            .arg('rust-analyzer') \
+            .build()
+
+        ret = cmd.run()
+        if ret != 0:
+            raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten()))
 
 
 @dataclass(slots=True)
@@ -168,6 +228,7 @@ class ToolchainInstallerBuilder:
         '''
         Specify the toolchain to be installed
         '''
+
         self._toolchain = toolchain
         return self
 
@@ -175,6 +236,7 @@ class ToolchainInstallerBuilder:
         '''
         Specify the distribution
         '''
+
         self._distribution = distribution
         return self
 
@@ -182,15 +244,16 @@ class ToolchainInstallerBuilder:
         '''
         Return the constructed installer
         '''
+
         if self._toolchain == Toolchain.C:
             return _CToolchainInstaller(self._distribution)
-        elif self._toolchain == Toolchain.CPP:
+        if self._toolchain == Toolchain.CPP:
             return _CppToolchainInstaller(self._distribution)
-        elif self._toolchain == Toolchain.GTK:
+        if self._toolchain == Toolchain.GTK:
             return _GtkToolchainInstaller(self._distribution)
-        elif self._toolchain == Toolchain.GO:
+        if self._toolchain == Toolchain.GO:
             return _GoToolchainInstaller(self._distribution)
-        elif self._toolchain == Toolchain.RUST:
+        if self._toolchain == Toolchain.RUST:
             return _RustToolchainInstaller(self._distribution)
-        else:
-            return Installer(self._distribution)
+
+        return Installer(self._distribution)

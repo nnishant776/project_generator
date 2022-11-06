@@ -8,6 +8,9 @@ import os
 import tempfile
 import platform
 
+from project_generator.lib.distromngr import Distribution
+from project_generator.lib.pkgmngr import PackageManagerBuilder
+
 
 def _download_go_toolchain(temp_output_path=None):
     '''
@@ -91,3 +94,16 @@ def _get_target_triple() -> str:
     operating_system = platform.system().lower()
 
     return f"{architecture}-unknown-{operating_system}-gnu"
+
+
+def _install_tools_packages(distribution: Distribution, pkg_list: list[str]):
+    '''
+    Helper function to install the packages
+    '''
+
+    pkg_manager = PackageManagerBuilder() \
+        .confirm_action(False) \
+        .distribution(distribution) \
+        .build()
+
+    return pkg_manager.install(pkg_list).commit()
