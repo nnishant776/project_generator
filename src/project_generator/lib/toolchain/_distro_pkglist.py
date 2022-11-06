@@ -6,17 +6,13 @@ for any given toolchain
 _toolchain_packages = {
     'rhel': {
         'c': [
-            'gcc',
-            'gdb',
             '@C Development Tools and Libraries',
-        ],
-        'cpp': [
-            'gcc-c++',
             'clang',
-            'llvm',
-            'clang-tools-extra',
             'lldb',
             'lld',
+        ],
+        'cpp': [
+            'llvm',
         ],
         'gtk': [
             'gtk4-devel',
@@ -50,19 +46,13 @@ _toolchain_packages = {
     },
     'debian': {
         'c': [
-            'gcc',
-            'gdb',
-            'build-essential'
-        ],
-        'cpp': [
-            'g++',
             'clang',
-            'clangd',
-            'clang-format',
-            'clang-tidy',
-            'llvm',
             'lldb',
             'lld',
+            'build-essential',
+        ],
+        'cpp': [
+            'llvm',
         ],
         'gtk': [
             'libgtk-4-dev',
@@ -96,14 +86,12 @@ _toolchain_packages = {
     'arch': {
         'c': [
             'base-devel',
-            'gcc',
-        ],
-        'cpp': [
             'clang',
-            'clang-tools-extra',
-            'llvm',
             'lldb',
             'lld',
+        ],
+        'cpp': [
+            'llvm',
         ],
         'gtk': [
             'gtk4',
@@ -141,4 +129,64 @@ _toolchain_packages = {
         'go': [],
         'python': [],
     }
+}
+
+_extra_tools_packages = {
+    'rhel': {
+        'c': [
+            'clang-tools-extra',
+            'cmake',
+            'make',
+            'pkgconf'
+        ],
+        'cpp': [],
+        'gtk': [
+            'd-feet'
+        ],
+        'base': [],
+        'rust': [],
+        'go': [],
+        'python': [],
+    },
+    'debian': {
+        'c': [
+            'clangd',
+            'cmake',
+            'make',
+            'pkgconf'
+        ],
+        'cpp': [],
+        'gtk': [
+            'd-feet'
+        ],
+        'base': [],
+        'rust': [],
+        'go': [],
+        'python': [],
+    },
+    'arch': {
+        'c': [
+            'clang-tools-extra',
+            'cmake',
+            'make',
+            'pkgconf'
+        ],
+        'cpp': [],
+        'gtk': [
+            'd-feet',
+        ],
+        'base': [],
+        'rust': [],
+        'go': [],
+        'python': [],
+    },
+    'suse': {
+        'c': [],
+        'cpp': [],
+        'gtk': [],
+        'base': [],
+        'rust': [],
+        'go': [],
+        'python': [],
+    },
 }
