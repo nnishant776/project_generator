@@ -173,22 +173,21 @@ def _check_call(*args, buffered_out: bool = True, **kw_args) -> int:
         stdout_file = subprocess.PIPE
         stderr_file = subprocess.STDOUT
 
-        process = subprocess.Popen(
-            *args, stdout=stdout_file, stderr=stderr_file)
+        with subprocess.Popen(*args, stdout=stdout_file, stderr=stderr_file) as process:
+            if process.stdout is not None:
+                with process.stdout as out:
+                    if not buffered_out:
+                        reader = out
+                    else:
+                        reader = BufferedReader(out)
+                    for line in iter(reader.readline, b''):
+                        logger.debug(
+                            "(%s) - %s", process.args[0], line.decode('utf-8').strip())
+                    process.stdout.flush()
 
-        if process.stdout is not None:
-            with process.stdout as out:
-                if not buffered_out:
-                    reader = out
-                else:
-                    reader = BufferedReader(out)
-                for line in iter(reader.readline, b''):
-                    logger.debug(
-                        "(%s) - %s", process.args[0], line.decode('utf-8').strip())
-                process.stdout.flush()
-
-        ret = process.wait()
-        logger.debug("(%s) - Process returned %d", process.args[0], ret)
+                ret = process.wait()
+                logger.debug("(%s) - Process returned %d",
+                             process.args[0], ret)
 
     except FileNotFoundError as exec_err:
         logger.debug(
