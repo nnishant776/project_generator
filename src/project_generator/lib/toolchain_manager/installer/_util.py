@@ -6,6 +6,7 @@ from urllib import request
 import json
 import os
 import tempfile
+import platform
 
 
 def _download_go_toolchain(temp_output_path=None):
@@ -65,3 +66,28 @@ def _download_go_toolchain(temp_output_path=None):
         raise exc
 
     return temp_output_path
+
+
+def _download_rust_toolchain():
+    '''
+    Download the Rust toolchain
+    '''
+
+    rustup_init_bin = "/tmp/rustup-init"
+
+    target_triple = _get_target_triple()
+
+    request.urlretrieve(
+        f"https://static.rust-lang.org/rustup/dist/{target_triple}/rustup-init", rustup_init_bin)
+
+    return rustup_init_bin
+
+
+def _get_target_triple() -> str:
+    '''
+    Generate the target triple for the current system
+    '''
+    architecture = platform.machine()
+    operating_system = platform.system().lower()
+
+    return f"{architecture}-unknown-{operating_system}-gnu"

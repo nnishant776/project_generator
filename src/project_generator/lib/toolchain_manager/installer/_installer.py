@@ -7,13 +7,15 @@ from copy import deepcopy
 import os
 import tarfile
 import shutil
+import subprocess
 
 from typing_extensions import Self
 
 from project_generator.lib.toolchain import Toolchain
 from project_generator.lib.distromngr import Distribution
 from project_generator.lib.pkgmngr import PackageManagerBuilder
-from ._util import _download_go_toolchain
+from project_generator.lib.utils.command import CommandBuilder
+from ._util import _download_go_toolchain, _download_rust_toolchain
 
 
 @dataclass(slots=True)
@@ -128,6 +130,29 @@ class _GoToolchainInstaller(Installer):
 
 
 @dataclass(slots=True)
+class _RustToolchainInstaller(Installer):
+    '''
+    Rust Toolchain installer
+    '''
+
+    def install_toolchain(self) -> int:
+        '''
+        Rust toolchain installer
+        '''
+
+        rustup_init_bin = _download_rust_toolchain()
+
+        os.chmod(rustup_init_bin, 0o755)
+
+        cmd = CommandBuilder().program(rustup_init_bin).option("-y").build()
+        ret = cmd.run()
+        if ret != 0:
+            raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten()))
+
+        os.remove(rustup_init_bin)
+
+
+@dataclass(slots=True)
 class ToolchainInstallerBuilder:
     '''
     Get the installer based on inputs
@@ -165,5 +190,7 @@ class ToolchainInstallerBuilder:
             return _GtkToolchainInstaller(self._distribution)
         elif self._toolchain == Toolchain.GO:
             return _GoToolchainInstaller(self._distribution)
+        elif self._toolchain == Toolchain.RUST:
+            return _RustToolchainInstaller(self._distribution)
         else:
             return Installer(self._distribution)
