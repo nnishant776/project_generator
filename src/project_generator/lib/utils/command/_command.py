@@ -200,7 +200,7 @@ def _check_call(*args, buffered_out: bool = True, **kw_args) -> int:
     Wrapper to intercept and forward the call to subprocess module
     '''
     logger = lgr
-    env = os.environ
+    env = deepcopy(os.environ)
     use_shell = False
 
     if kw_args:
