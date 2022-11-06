@@ -46,13 +46,13 @@ class TestCommandBuilder(unittest.TestCase):
         '''
         Test a single command without any args
         '''
-        cmd = CommandBuilder().program("/usr/bin/ls").build()
+        cmd = CommandBuilder().program("ls").build()
 
-        self.assertEqual(cmd.cmd_name, "/usr/bin/ls")
+        self.assertEqual(cmd.cmd_name, "ls")
         self.assertEqual(cmd.cmd_opts, None)
         self.assertEqual(cmd.cmd_args, None)
         self.assertEqual(cmd.sub_cmd, None)
-        self.assertEqual(cmd.flatten(), ["/usr/bin/ls"])
+        self.assertEqual(cmd.flatten(), ["ls"])
         self.assertEqual(cmd.run(), 0)
 
     def test_cmd_with_env(self):
@@ -66,7 +66,7 @@ class TestCommandBuilder(unittest.TestCase):
             .env_vars({
                 'GOPATH': '/usr/local/lib/go',
                 'GOROOT': '/usr/local/sdks/go',
-                'PATH': '$PATH:/usr/local/sdks/go/bin'
+                'PATH': f"{os.getenv('PATH')}:/usr/local/sdks/go/bin"
             }) \
             .build()
 
@@ -74,12 +74,31 @@ class TestCommandBuilder(unittest.TestCase):
             '/usr/bin/env',
             'GOPATH=/usr/local/lib/go',
             'GOROOT=/usr/local/sdks/go',
-            'PATH=$PATH:/usr/local/sdks/go/bin',
+            f"PATH={os.getenv('PATH')}:/usr/local/sdks/go/bin",
             'go',
             'env'
         ])
 
-        self.assertEqual(cmd.run(), 0)
+        if os.path.exists('/usr/local/sdks/go/bin/go'):
+            self.assertEqual(cmd.run(), 0)
+        else:
+            self.assertEqual(cmd.run(), 2)
+
+    def test_cmd_without_env(self):
+        '''
+        Test a single command with addtional envrionment variables
+        '''
+        cmd = CommandBuilder() \
+            .program('go') \
+            .arg('env') \
+            .build()
+
+        self.assertEqual(cmd.flatten(), [
+            'go',
+            'env'
+        ])
+
+        self.assertEqual(cmd.run(), 2)
 
 
 if __name__ == '__main__':
