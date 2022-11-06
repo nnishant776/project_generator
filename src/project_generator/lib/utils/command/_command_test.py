@@ -45,13 +45,39 @@ class TestCommandBuilder(unittest.TestCase):
         '''
         Test a single command without any args
         '''
-        cmd = CommandBuilder().program("ls").build()
+        cmd = CommandBuilder().program("/usr/bin/ls").build()
 
-        self.assertEqual(cmd.cmd_name, "ls")
+        self.assertEqual(cmd.cmd_name, "/usr/bin/ls")
         self.assertEqual(cmd.cmd_opts, None)
         self.assertEqual(cmd.cmd_args, None)
         self.assertEqual(cmd.sub_cmd, None)
-        self.assertEqual(cmd.flatten(), ["ls"])
+        self.assertEqual(cmd.flatten(), ["/usr/bin/ls"])
+        self.assertEqual(cmd.run(), 0)
+
+    def test_cmd_with_env(self):
+        '''
+        Test a single command with additional environment variables
+        '''
+
+        cmd = CommandBuilder() \
+            .program('go') \
+            .arg('env') \
+            .env_vars({
+                'GOPATH': '/usr/local/lib/go',
+                'GOROOT': '/usr/local/sdks/go',
+                'PATH': '$PATH:/usr/local/sdks/go/bin'
+            }) \
+            .build()
+
+        self.assertEqual(cmd.flatten(), [
+            '/usr/bin/env',
+            'GOPATH=/usr/local/lib/go',
+            'GOROOT=/usr/local/sdks/go',
+            'PATH=$PATH:/usr/local/sdks/go/bin',
+            'go',
+            'env'
+        ])
+
         self.assertEqual(cmd.run(), 0)
 
 
