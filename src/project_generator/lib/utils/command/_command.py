@@ -2,12 +2,12 @@
 Command wrapper
 '''
 
-import subprocess
 import os
+import subprocess
+from copy import deepcopy
 from dataclasses import dataclass
 from io import BufferedReader
 from logging import Logger, StreamHandler
-from copy import deepcopy
 
 from typing_extensions import Self
 
@@ -215,6 +215,7 @@ def _check_call(*args, buffered_out: bool = True, **kw_args) -> int:
         use_shell = kw_args.get('shell', False)
 
     logger.debug("Command: %s", *args)
+    # logger.debug("Environment: %s", env)
 
     ret = 0
 

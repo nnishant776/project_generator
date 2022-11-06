@@ -1,3 +1,7 @@
+'''
+Scaffold generator base structures
+'''
+
 from dataclasses import dataclass
 
 from ._project_data import ProjectMetadata

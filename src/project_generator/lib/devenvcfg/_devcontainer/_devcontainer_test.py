@@ -6,12 +6,11 @@ import io
 import unittest
 
 import yaml
+
 from project_generator.lib import devenvcfg
-from project_generator.lib.devenvcfg._devcontainer._devcontainer import \
-    DevContainerBuilder, DevContainer
-
+from project_generator.lib.devenvcfg._devcontainer._devcontainer import (
+    DevContainer, DevContainerBuilder)
 from project_generator.lib.utils.logger import get_logger
-
 
 logger = get_logger("devcontainer_test")
 

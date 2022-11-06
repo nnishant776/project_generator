@@ -2,9 +2,10 @@
 Unit tests for command package
 '''
 
+import os
 import unittest
 
-from project_generator.lib.utils.command._command import CommandBuilder, Command
+from ._command import Command, CommandBuilder
 
 
 class TestCommandBuilder(unittest.TestCase):

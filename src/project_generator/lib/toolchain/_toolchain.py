@@ -2,11 +2,12 @@
 Abstraction for a toolchain
 '''
 
-from enum import Enum
 from copy import deepcopy
+from enum import Enum
 
 from project_generator.lib.distromngr import Distribution
-from ._distro_pkglist import _toolchain_packages, _extra_tools_packages
+
+from ._distro_pkglist import _extra_tools_packages, _toolchain_packages
 
 
 class Toolchain(Enum):

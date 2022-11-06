@@ -6,7 +6,8 @@ from dataclasses import dataclass
 
 from typing_extensions import Self
 
-from project_generator.lib.utils.command import CommandBuilder, Command
+from project_generator.lib.utils.command import Command, CommandBuilder
+
 from ._pkgmngrif import PackageManager
 
 

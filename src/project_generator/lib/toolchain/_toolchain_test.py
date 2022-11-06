@@ -5,9 +5,9 @@ Test module for Toolchain
 import unittest
 
 from project_generator.lib.distromngr import Distribution
+
+from ._distro_pkglist import _extra_tools_packages, _toolchain_packages
 from ._toolchain import Toolchain
-from ._distro_pkglist import (
-    _extra_tools_packages, _toolchain_packages)
 
 
 class TestToolchain(unittest.TestCase):

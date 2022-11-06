@@ -2,8 +2,8 @@
 Interface for package manager
 '''
 
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 from typing_extensions import Self
 

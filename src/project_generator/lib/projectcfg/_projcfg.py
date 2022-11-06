@@ -2,9 +2,9 @@
 Module dealing with project configuration based on the selected template
 '''
 
-from enum import Enum
-from dataclasses import dataclass
 from copy import deepcopy
+from dataclasses import dataclass
+from enum import Enum
 
 from typing_extensions import Self
 

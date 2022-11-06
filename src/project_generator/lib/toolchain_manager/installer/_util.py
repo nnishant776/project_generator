@@ -2,11 +2,11 @@
 Utility module used by the installer
 '''
 
-from urllib import request
 import json
 import os
-import tempfile
 import platform
+import tempfile
+from urllib import request
 
 from project_generator.lib.distromngr import Distribution
 from project_generator.lib.pkgmngr import PackageManagerBuilder

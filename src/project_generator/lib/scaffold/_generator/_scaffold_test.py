@@ -2,11 +2,11 @@
 Test module for project scaffold generator
 '''
 
-import unittest
 import os
+import unittest
 
-from project_generator.lib.scaffold import ProjectScaffoldBuilder
 from project_generator.lib.projectcfg import ProjectTemplate
+from project_generator.lib.scaffold import ProjectScaffoldBuilder
 
 
 class TestScaffold(unittest.TestCase):

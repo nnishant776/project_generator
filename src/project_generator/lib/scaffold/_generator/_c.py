@@ -4,8 +4,8 @@ Project scaffold generator for C/C++ projects
 
 import os
 from dataclasses import dataclass
-from tempfile import mkdtemp
 from shutil import copytree, move
+from tempfile import mkdtemp
 
 import jinja2 as j2
 

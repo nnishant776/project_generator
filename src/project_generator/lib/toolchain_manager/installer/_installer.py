@@ -2,19 +2,21 @@
 Module for installing the configured toolchains for the project
 '''
 
-from dataclasses import dataclass
-from copy import deepcopy
 import os
-import tarfile
 import shutil
 import subprocess
+import tarfile
+from copy import deepcopy
+from dataclasses import dataclass
 
 from typing_extensions import Self
 
-from project_generator.lib.toolchain import Toolchain
 from project_generator.lib.distromngr import Distribution
+from project_generator.lib.toolchain import Toolchain
 from project_generator.lib.utils.command import CommandBuilder
-from ._util import _download_go_toolchain, _download_rust_toolchain, _install_tools_packages
+
+from ._util import (_download_go_toolchain, _download_rust_toolchain,
+                    _install_tools_packages)
 
 
 @dataclass(slots=True)

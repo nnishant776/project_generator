@@ -4,10 +4,11 @@ Implementation for PackageManagerBuilder
 from typing_extensions import Self
 
 from project_generator.lib.distromngr import Distribution, PackageHandler
+
 from ._apt import AptPackageManager
 from ._pacman import PacmanPackageManager
-from ._yum import YumPackageManager
 from ._pkgmngrif import PackageManager
+from ._yum import YumPackageManager
 
 
 class PackageManagerBuilder:

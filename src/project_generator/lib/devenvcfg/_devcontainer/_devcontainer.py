@@ -2,11 +2,12 @@
 Module which configures a devcontaner specification
 '''
 
+from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from copy import deepcopy
 
 from typing_extensions import Self
+
 from project_generator.lib.utils.serializer import DictSerializable
 
 

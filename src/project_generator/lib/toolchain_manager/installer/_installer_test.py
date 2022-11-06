@@ -4,9 +4,10 @@ Test module for toolchain installer
 
 import unittest
 
-from project_generator.lib.toolchain import Toolchain
 from project_generator.lib.distromngr import Distribution
-from project_generator.lib.toolchain_manager.installer import ToolchainInstallerBuilder
+from project_generator.lib.toolchain import Toolchain
+from project_generator.lib.toolchain_manager.installer import \
+    ToolchainInstallerBuilder
 
 
 class TestToolchainInstaller(unittest.TestCase):
@@ -56,4 +57,4 @@ class TestToolchainInstaller(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    TestToolchainInstaller().test_go_installer()
