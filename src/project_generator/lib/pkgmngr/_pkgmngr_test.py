@@ -1,10 +1,10 @@
 '''
 PackageManager tests
 '''
-import os
+
 import unittest
 
-from project_generator.lib.distromngr import Distribution, PackageHandler
+from project_generator.lib.distromngr import Distribution, PackageHandler, get_distribution
 from project_generator.lib.pkgmngr import PackageManagerBuilder
 from project_generator.lib.utils.logger import get_logger
 
@@ -47,7 +47,7 @@ class TestAptPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "apt-get", "-y", "install",  "gcc"])
 
-        if _check_os() == PackageHandler.APT:
+        if _check_pkg_handler() == PackageHandler.APT:
             self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
@@ -62,7 +62,7 @@ class TestAptPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "apt-get", "-y", "upgrade",  "gcc"])
 
-        if _check_os() == PackageHandler.APT:
+        if _check_pkg_handler() == PackageHandler.APT:
             self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
@@ -77,7 +77,7 @@ class TestAptPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "apt-get", "-y", "remove",  "clang"])
 
-        if _check_os() == PackageHandler.APT:
+        if _check_pkg_handler() == PackageHandler.APT:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync(self):
@@ -92,7 +92,7 @@ class TestAptPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "apt-get", "-y", "update"])
 
-        if _check_os() == PackageHandler.APT:
+        if _check_pkg_handler() == PackageHandler.APT:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync_and_upgrade(self):
@@ -111,7 +111,7 @@ class TestAptPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[1].flatten(), [
                          "apt-get", "-y", "upgrade", "gcc"])
 
-        if _check_os() == PackageHandler.APT:
+        if _check_pkg_handler() == PackageHandler.APT:
             self.assertEqual(mngr.commit(), 0)
 
 
@@ -132,7 +132,7 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "pacman", "--noconfirm", "-S",  "gcc", "clang"])
 
-        if _check_os() == PackageHandler.PACMAN:
+        if _check_pkg_handler() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
@@ -147,7 +147,7 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "pacman", "--noconfirm", "-Su",  "gcc"])
 
-        if _check_os() == PackageHandler.PACMAN:
+        if _check_pkg_handler() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
@@ -162,7 +162,7 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "pacman", "--noconfirm", "-Rcs",  "clang"])
 
-        if _check_os() == PackageHandler.PACMAN:
+        if _check_pkg_handler() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync(self):
@@ -177,7 +177,7 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "pacman", "--noconfirm", "-Sy"])
 
-        if _check_os() == PackageHandler.PACMAN:
+        if _check_pkg_handler() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync_and_upgrade(self):
@@ -196,7 +196,7 @@ class TestPacmanPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[1].flatten(), [
                          "pacman", "--noconfirm", "-Su", "gcc"])
 
-        if _check_os() == PackageHandler.PACMAN:
+        if _check_pkg_handler() == PackageHandler.PACMAN:
             self.assertEqual(mngr.commit(), 0)
 
 
@@ -217,7 +217,7 @@ class TestYumPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "yum", "-y", "install",  "gcc"])
 
-        if _check_os() == PackageHandler.YUM:
+        if _check_pkg_handler() == PackageHandler.YUM:
             self.assertEqual(mngr.commit(), 0)
 
     def test_update(self):
@@ -232,7 +232,7 @@ class TestYumPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "yum", "-y", "upgrade",  "gcc"])
 
-        if _check_os() == PackageHandler.YUM:
+        if _check_pkg_handler() == PackageHandler.YUM:
             self.assertEqual(mngr.commit(), 0)
 
     def test_remove(self):
@@ -247,7 +247,7 @@ class TestYumPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "yum", "-y", "remove",  "clang"])
 
-        if _check_os() == PackageHandler.YUM:
+        if _check_pkg_handler() == PackageHandler.YUM:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync(self):
@@ -262,7 +262,7 @@ class TestYumPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[0].flatten(), [
                          "yum", "-y", "makecache"])
 
-        if _check_os() == PackageHandler.YUM:
+        if _check_pkg_handler() == PackageHandler.YUM:
             self.assertEqual(mngr.commit(), 0)
 
     def test_sync_and_upgrade(self):
@@ -281,37 +281,12 @@ class TestYumPackageManager(unittest.TestCase):
         self.assertEqual(mngr.command()[1].flatten(), [
                          "yum", "-y", "upgrade", "gcc"])
 
-        if _check_os() == PackageHandler.YUM:
+        if _check_pkg_handler() == PackageHandler.YUM:
             self.assertEqual(mngr.commit(), 0)
 
 
-def _check_os() -> PackageHandler | None:
-    # read /etc/os-release or /lib/os-release environment file
-    os_rel = ''
-    for path in ['/etc/os-release', '/usr/lib/os-release']:
-        if not os.path.exists(path):
-            continue
-        os_rel = path
-        break
-
-    if os_rel == '':
-        raise FileNotFoundError("No 'os-release' found")
-
-    env_dict = {}
-
-    with open(os_rel, encoding='utf-8') as rel_file:
-        for line in rel_file:
-            values = line.strip().split('=')
-            if values[0] in ['ID', 'ID_LIKE']:
-                env_dict[values[0]] = values[1]
-
-    lgr.debug("Parse env file content: %s", env_dict)
-    for item in Distribution:
-        if item.name.lower() in [env_dict.get('ID', ""), env_dict.get('ID_LIKE', "")] or \
-                item.value in [env_dict.get('ID', ""), env_dict.get('ID_LIKE', "")]:
-            return PackageHandler.from_distribution(item)
-
-    return None
+def _check_pkg_handler() -> PackageHandler | None:
+    return PackageHandler.from_distribution(get_distribution())
 
 
 if __name__ == '__main__':
