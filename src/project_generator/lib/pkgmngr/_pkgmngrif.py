@@ -29,11 +29,14 @@ class PackageManager:
     action: Action = None
     pkglist: dict[str, Action] = None
     cmd_name: str = None
-    synced: bool = False
+    synced: bool = None
     command_list: list[Command] = None
 
     def __init__(self):
         self.confirmation = False
+        self.action = None
+        self.cmd_name = None
+        self.synced = False
         self.command_list: list[Command] = []
         self.pkglist = {}
 
