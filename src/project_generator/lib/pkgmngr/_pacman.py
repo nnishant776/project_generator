@@ -34,12 +34,15 @@ class PacmanPackageManager(PackageManager):
         if sync_repo:
             cmd_sync = self._partial_cmd()
             cmd_sync.subcommand(Command(cmd_name="-Sy"))
-            self.sync_primed = True
+            self.synced = True
             self.command_list.append(cmd_sync.build())
 
         return self
 
     def install(self, install_list: list[str]) -> Self:
+        if not self.synced:
+            self.sync(True)
+
         if len(install_list) > 0:
             cmd_install = self._partial_cmd()
             cmd_install.subcommand(Command(cmd_name="-S"))

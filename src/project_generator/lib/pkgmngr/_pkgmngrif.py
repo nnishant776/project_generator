@@ -29,7 +29,7 @@ class PackageManager:
     action: Action = None
     pkglist: dict[str, Action] = None
     cmd_name: str = None
-    sync_primed: bool = False
+    synced: bool = False
     command_list: list[Command] = None
 
     def __init__(self):
