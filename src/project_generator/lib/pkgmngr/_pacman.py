@@ -63,6 +63,9 @@ class PacmanPackageManager(PackageManager):
         return self
 
     def update(self, update_list: list[str]) -> Self:
+        if not self.synced:
+            self.sync(True)
+
         if len(update_list) > 0:
             cmd_update = self._partial_cmd()
             cmd_update.subcommand(Command(cmd_name="-Su"))
