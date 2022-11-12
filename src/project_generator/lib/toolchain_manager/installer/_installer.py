@@ -215,23 +215,75 @@ class _RustToolchainInstaller(Installer):
 
 
 @dataclass(slots=True)
+class ToolchainInstaller:
+    '''
+    Installs a given toolchain for the specified distro
+    '''
+
+    distribution: Distribution
+    toolchain: Toolchain
+    install_path: str = ""
+    additional_tools: bool = False
+
+    def run(self) -> int:
+        '''
+        Run the constructed installer
+        '''
+
+        if self.toolchain is None or self.toolchain not in Toolchain:
+            raise ValueError(
+                f"Invalid or unsupported toolchain '{self.toolchain}' specified")
+
+        if self.toolchain not in [Toolchain.GO, Toolchain.RUST] and \
+                (self.distribution is None or self.distribution not in Distribution):
+            raise ValueError(
+                f"Distribution not specified for '{self.toolchain.value}' toolchain")
+
+        installer = None
+        if self.toolchain == Toolchain.C:
+            installer = _CToolchainInstaller(self.distribution)
+        elif self.toolchain == Toolchain.CPP:
+            installer = _CppToolchainInstaller(self.distribution)
+        elif self.toolchain == Toolchain.GTK:
+            installer = _GtkToolchainInstaller(self.distribution)
+        elif self.toolchain == Toolchain.GO:
+            installer = _GoToolchainInstaller(self.distribution)
+        elif self.toolchain == Toolchain.RUST:
+            installer = _RustToolchainInstaller(self.distribution)
+
+        ret = installer.install_toolchain()
+        if ret != 0:
+            return ret
+
+        return installer.install_additional_tools()
+
+
+@dataclass(slots=True)
 class ToolchainInstallerBuilder:
     '''
     Get the installer based on inputs
     '''
-    _distribution: Distribution
-    _toolchain: Toolchain
+    _toolchain_installer: ToolchainInstaller
 
     def __init__(self):
-        self._distribution = None
-        self._toolchain = None
+        self._toolchain_installer = ToolchainInstaller(None, None)
 
-    def install_toolchain(self, toolchain: Toolchain) -> Self:
+    def install_toolchain(self, toolchain: Toolchain, path: str = "") -> Self:
         '''
         Specify the toolchain to be installed
         '''
 
-        self._toolchain = toolchain
+        self._toolchain_installer.toolchain = toolchain
+        self._toolchain_installer.install_path = path
+        return self
+
+    def install_additional_tools(self, install: bool = False) -> Self:
+        '''
+        Specify whether to install additional utility tools acoompanied with
+        the toolchain
+        '''
+
+        self._toolchain_installer.additional_tools = install
         return self
 
     def distribution(self, distribution: Distribution) -> Self:
@@ -239,23 +291,12 @@ class ToolchainInstallerBuilder:
         Specify the distribution
         '''
 
-        self._distribution = distribution
+        self._toolchain_installer.distribution = distribution
         return self
 
-    def build(self) -> Installer:
+    def build(self) -> ToolchainInstaller:
         '''
         Return the constructed installer
         '''
 
-        if self._toolchain == Toolchain.C:
-            return _CToolchainInstaller(self._distribution)
-        if self._toolchain == Toolchain.CPP:
-            return _CppToolchainInstaller(self._distribution)
-        if self._toolchain == Toolchain.GTK:
-            return _GtkToolchainInstaller(self._distribution)
-        if self._toolchain == Toolchain.GO:
-            return _GoToolchainInstaller(self._distribution)
-        if self._toolchain == Toolchain.RUST:
-            return _RustToolchainInstaller(self._distribution)
-
-        return Installer(self._distribution)
+        return self._toolchain_installer
