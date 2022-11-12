@@ -44,7 +44,9 @@ class TestAptPackageManager(unittest.TestCase):
             .distribution(Distribution.UBUNTU) \
             .build()
         mngr.install(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), ["apt-get", "-y", "update"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "apt-get", "-y", "install",  "gcc"])
 
         if _check_pkg_handler() == PackageHandler.APT:
@@ -59,7 +61,9 @@ class TestAptPackageManager(unittest.TestCase):
             .distribution(Distribution.UBUNTU) \
             .build()
         mngr.update(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), ["apt-get", "-y", "update"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "apt-get", "-y", "upgrade",  "gcc"])
 
         if _check_pkg_handler() == PackageHandler.APT:
@@ -129,7 +133,10 @@ class TestPacmanPackageManager(unittest.TestCase):
             .distribution(Distribution.ARCH) \
             .build()
         mngr.install(['gcc', 'clang'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), [
+                         "pacman", "--noconfirm", "-Sy"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "pacman", "--noconfirm", "-S",  "gcc", "clang"])
 
         if _check_pkg_handler() == PackageHandler.PACMAN:
@@ -144,7 +151,10 @@ class TestPacmanPackageManager(unittest.TestCase):
             .distribution(Distribution.ARCH) \
             .build()
         mngr.update(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), [
+                         "pacman", "--noconfirm", "-Sy"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "pacman", "--noconfirm", "-Su",  "gcc"])
 
         if _check_pkg_handler() == PackageHandler.PACMAN:
@@ -214,7 +224,10 @@ class TestYumPackageManager(unittest.TestCase):
             .distribution(Distribution.RHEL) \
             .build()
         mngr.install(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), [
+                         "yum", "-y", "makecache"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "yum", "-y", "install",  "gcc"])
 
         if _check_pkg_handler() == PackageHandler.YUM:
@@ -229,7 +242,10 @@ class TestYumPackageManager(unittest.TestCase):
             .distribution(Distribution.RHEL) \
             .build()
         mngr.update(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), [
+                         "yum", "-y", "makecache"])
+        self.assertEqual(cmd_list[1].flatten(), [
                          "yum", "-y", "upgrade",  "gcc"])
 
         if _check_pkg_handler() == PackageHandler.YUM:
@@ -275,10 +291,11 @@ class TestYumPackageManager(unittest.TestCase):
             .build()
         mngr.sync(True)
         mngr.update(['gcc'])
-        self.assertEqual(mngr.command()[0].flatten(), [
+        cmd_list = mngr.command()
+        self.assertEqual(cmd_list[0].flatten(), [
                          "yum", "-y", "makecache"])
 
-        self.assertEqual(mngr.command()[1].flatten(), [
+        self.assertEqual(cmd_list[1].flatten(), [
                          "yum", "-y", "upgrade", "gcc"])
 
         if _check_pkg_handler() == PackageHandler.YUM:
