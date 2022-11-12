@@ -112,12 +112,12 @@ _toolchain_packages = {
             'curl',
             'wget',
             'vim',
-            'python3-pip',
+            'python-pip',
         ],
         'rust': [],
         'go': [],
         'python': [
-            'python3-pip',
+            'python-pip',
         ],
     },
     'suse': {
