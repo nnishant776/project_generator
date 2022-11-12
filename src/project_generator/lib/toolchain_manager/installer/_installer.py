@@ -148,6 +148,8 @@ class _GoToolchainInstaller(Installer):
 
         os.remove(go_tar_file)
 
+        return 0
+
     def install_additional_tools(self, path: str = None) -> int:
         '''
         Go additional tools installer
@@ -164,15 +166,19 @@ class _GoToolchainInstaller(Installer):
             'github.com/ramya-rao-a/go-outline@latest'
         ]
 
-        cmd = CommandBuilder() \
-            .program('go') \
-            .subcommand('install') \
-            .args(go_tools_list) \
-            .build()
+        for tool in go_tools_list:
+            cmd = CommandBuilder() \
+                .program('go') \
+                .arg('install') \
+                .arg(tool) \
+                .build()
 
-        ret = cmd.run()
-        if ret != 0:
-            raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten))
+            ret = cmd.run()
+            if ret != 0:
+                raise subprocess.CalledProcessError(
+                    ret, ' '.join(cmd.flatten()))
+
+        return 0
 
 
 @dataclass(slots=True)
