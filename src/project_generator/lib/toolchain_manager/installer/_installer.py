@@ -203,6 +203,8 @@ class _RustToolchainInstaller(Installer):
 
         os.remove(rustup_init_bin)
 
+        return ret
+
     def install_additional_tools(self, path: str = None) -> int:
         '''
         Rust additional tools installer
@@ -210,14 +212,16 @@ class _RustToolchainInstaller(Installer):
 
         cmd = CommandBuilder() \
             .program('rustup') \
-            .subcommand('component') \
-            .subcommand('add') \
+            .arg('component') \
+            .arg('add') \
             .arg('rust-analyzer') \
             .build()
 
         ret = cmd.run()
         if ret != 0:
             raise subprocess.CalledProcessError(ret, ' '.join(cmd.flatten()))
+
+        return ret
 
 
 @dataclass(slots=True)
