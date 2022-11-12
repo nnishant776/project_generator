@@ -84,22 +84,6 @@ class TestCommandBuilder(unittest.TestCase):
         else:
             self.assertEqual(cmd.run(), 2)
 
-    def test_cmd_without_env(self):
-        '''
-        Test a single command with addtional envrionment variables
-        '''
-        cmd = CommandBuilder() \
-            .program('go') \
-            .arg('env') \
-            .build()
-
-        self.assertEqual(cmd.flatten(), [
-            'go',
-            'env'
-        ])
-
-        self.assertEqual(cmd.run(), 2)
-
 
 if __name__ == '__main__':
     unittest.main()
