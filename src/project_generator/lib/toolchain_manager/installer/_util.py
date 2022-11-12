@@ -175,6 +175,8 @@ def _download_rust_toolchain():
     request.urlretrieve(
         f"https://static.rust-lang.org/rustup/dist/{target_triple}/rustup-init", rustup_init_bin)
 
+    os.chmod(rustup_init_bin, 0o755)
+
     return rustup_init_bin
 
 
