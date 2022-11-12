@@ -265,7 +265,10 @@ class ToolchainInstaller:
         if ret != 0:
             return ret
 
-        return installer.install_additional_tools()
+        if self.additional_tools:
+            ret = installer.install_additional_tools()
+
+        return ret
 
 
 @dataclass(slots=True)
